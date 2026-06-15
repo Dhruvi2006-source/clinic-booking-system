@@ -1,0 +1,285 @@
+@import "tailwindcss";
+
+@theme {
+  /* AuraClinic Theme Colors - Dynamic Variables mapped to CSS :root values */
+  --color-background: var(--background);
+  --color-on-background: var(--on-background);
+  
+  --color-primary-fixed: var(--primary-fixed);
+  --color-primary-fixed-dim: var(--primary-fixed-dim);
+  --color-on-primary-fixed: var(--on-primary-fixed);
+  --color-on-primary-fixed-variant: var(--on-primary-fixed-variant);
+  
+  --color-surface: var(--surface);
+  --color-on-surface: var(--on-surface);
+  --color-on-surface-variant: var(--on-surface-variant);
+  
+  --color-surface-bright: var(--surface-bright);
+  --color-surface-dim: var(--surface-dim);
+  
+  --color-surface-container-lowest: var(--surface-container-lowest);
+  --color-surface-container-low: var(--surface-container-low);
+  --color-surface-container: var(--surface-container);
+  --color-surface-container-high: var(--surface-container-high);
+  --color-surface-container-highest: var(--surface-container-highest);
+  
+  --color-primary: var(--primary);
+  --color-on-primary: var(--on-primary);
+  --color-primary-container: var(--primary-container);
+  --color-on-primary-container: var(--on-primary-container);
+  --color-inverse-primary: var(--inverse-primary);
+  
+  --color-secondary: var(--secondary);
+  --color-on-secondary: var(--on-secondary);
+  --color-secondary-container: var(--secondary-container);
+  --color-on-secondary-container: var(--on-secondary-container);
+  
+  --color-tertiary: var(--tertiary);
+  --color-on-tertiary: var(--on-tertiary);
+  --color-tertiary-container: var(--tertiary-container);
+  --color-on-tertiary-container: var(--on-tertiary-container);
+  
+  --color-outline: var(--outline);
+  --color-outline-variant: var(--outline-variant);
+  
+  --color-error: var(--error);
+  --color-on-error: var(--on-error);
+  --color-error-container: var(--error-container);
+  --color-on-error-container: var(--on-error-container);
+
+  /* Custom Border Radii */
+  --radius-sm: 0.5rem;
+  --radius-md: 1rem;
+  --radius-lg: 1.5rem;
+  --radius-xl: 2.5rem;
+  --radius-2xl: 4rem;
+  --radius-full: 9999px;
+
+  /* Custom Spacings */
+  --spacing-container-max: 1280px;
+  --spacing-gutter: 24px;
+  --spacing-unit: 8px;
+  --spacing-margin-desktop: 48px;
+  --spacing-section-gap: 80px;
+  --spacing-margin-mobile: 20px;
+
+  /* Font Families mapped to Next.js variables */
+  --font-inter: var(--font-inter);
+  --font-geist: var(--font-geist-sans);
+
+  /* Typography shortcuts */
+  --font-display-lg: var(--font-inter), sans-serif;
+  --font-headline-lg: var(--font-inter), sans-serif;
+  --font-headline-lg-mobile: var(--font-inter), sans-serif;
+  --font-headline-md: var(--font-inter), sans-serif;
+  --font-body-lg: var(--font-inter), sans-serif;
+  --font-body-md: var(--font-inter), sans-serif;
+  --font-label-md: var(--font-geist-sans), sans-serif;
+  --font-caption: var(--font-inter), sans-serif;
+
+  /* Custom Font Sizes */
+  --font-size-display-lg: 48px;
+  --font-size-headline-lg: 32px;
+  --font-size-headline-lg-mobile: 24px;
+  --font-size-headline-md: 20px;
+  --font-size-body-lg: 18px;
+  --font-size-body-md: 16px;
+  --font-size-label-md: 14px;
+  --font-size-caption: 12px;
+}
+
+/* Light theme values */
+:root {
+  --background: #f8f9ff;
+  --on-background: #0b1c30;
+  
+  --primary-fixed: #dae2fd;
+  --primary-fixed-dim: #bec6e0;
+  --on-primary-fixed: #131b2e;
+  --on-primary-fixed-variant: #3f465c;
+  
+  --surface: #f8f9ff;
+  --on-surface: #0b1c30;
+  --on-surface-variant: #45464d;
+  
+  --surface-bright: #f8f9ff;
+  --surface-dim: #cbdbf5;
+  
+  --surface-container-lowest: #ffffff;
+  --surface-container-low: #eff4ff;
+  --surface-container: #e5eeff;
+  --surface-container-high: #dce9ff;
+  --surface-container-highest: #d3e4fe;
+  
+  --primary: #0f172a; /* Deep Navy */
+  --on-primary: #ffffff;
+  --primary-container: #131b2e;
+  --on-primary-container: #7c839b;
+  --inverse-primary: #bec6e0;
+  
+  --secondary: #526069;
+  --on-secondary: #ffffff;
+  --secondary-container: #d3e2ed;
+  --on-secondary-container: #56656e;
+  
+  --tertiary: #3b82f6; /* Accent Blue */
+  --on-tertiary: #ffffff;
+  --tertiary-container: #001a42;
+  --on-tertiary-container: #3980f4;
+  
+  --outline: #76777d;
+  --outline-variant: #c6c6cd;
+  
+  --error: #ba1a1a;
+  --on-error: #ffffff;
+  --error-container: #ffdad6;
+  --on-error-container: #93000a;
+
+  --shadow-tint: rgba(15, 23, 42, 0.04);
+  --shadow-tint-hover: rgba(15, 23, 42, 0.08);
+}
+
+/* Dark theme values */
+.dark {
+  --background: #030712; /* Deep Black */
+  --on-background: #f9fafb;
+  
+  --primary-fixed: #1f2937;
+  --primary-fixed-dim: #111827;
+  --on-primary-fixed: #f9fafb;
+  --on-primary-fixed-variant: #9ca3af;
+  
+  --surface: #030712;
+  --on-surface: #f9fafb;
+  --on-surface-variant: #9ca3af;
+  
+  --surface-bright: #111827;
+  --surface-dim: #030712;
+  
+  --surface-container-lowest: #090d16;
+  --surface-container-low: #111827;
+  --surface-container: #1f2937;
+  --surface-container-high: #374151;
+  --surface-container-highest: #4b5563;
+  
+  --primary: #f9fafb; /* Pure White */
+  --on-primary: #030712;
+  --primary-container: #1f2937;
+  --on-primary-container: #cbd5e1;
+  --inverse-primary: #374151;
+  
+  --secondary: #9ca3af;
+  --on-secondary: #030712;
+  --secondary-container: #1f2937;
+  --on-secondary-container: #cbd5e1;
+  
+  --tertiary: #60a5fa; /* Light Accent Blue */
+  --on-tertiary: #030712;
+  --tertiary-container: #1e3a8a;
+  --on-tertiary-container: #93c5fd;
+  
+  --outline: #4b5563;
+  --outline-variant: #374151;
+  
+  --error: #ef4444;
+  --on-error: #ffffff;
+  --error-container: #7f1d1d;
+  --on-error-container: #fca5a5;
+
+  --shadow-tint: rgba(0, 0, 0, 0.4);
+  --shadow-tint-hover: rgba(0, 0, 0, 0.6);
+}
+
+/* Base style setups */
+body {
+  background-color: var(--background);
+  color: var(--on-background);
+  font-family: var(--font-inter), sans-serif;
+  transition: background-color 0.3s ease, color 0.3s ease;
+}
+
+/* Custom premium shadow utilities */
+.ambient-shadow {
+  box-shadow: 0px 4px 20px var(--shadow-tint);
+  transition: box-shadow 0.3s ease, transform 0.3s ease, border-color 0.3s ease;
+}
+.ambient-shadow-hover:hover {
+  box-shadow: 0px 12px 30px var(--shadow-tint-hover);
+  transform: translateY(-2px);
+}
+.shadow-level-2 {
+  box-shadow: 0px 4px 20px var(--shadow-tint);
+}
+.shadow-level-3 {
+  box-shadow: 0px 20px 40px var(--shadow-tint-hover);
+}
+.soft-border {
+  border: 1px solid var(--outline-variant);
+  transition: border-color 0.2s ease;
+}
+.glass-panel {
+  background: rgba(255, 255, 255, 0.03);
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+}
+.light .glass-panel {
+  background: rgba(255, 255, 255, 0.7);
+  border: 1px solid rgba(255, 255, 255, 0.4);
+}
+
+.material-symbols-outlined {
+  font-variation-settings: 'FILL' 0, 'wght' 300, 'GRAD' 0, 'opsz' 24;
+  display: inline-block;
+  vertical-align: middle;
+  line-height: 1;
+}
+.icon-fill {
+  font-variation-settings: 'FILL' 1, 'wght' 300, 'GRAD' 0, 'opsz' 24;
+}
+
+/* Custom scrollbars */
+.custom-scrollbar::-webkit-scrollbar,
+.time-slots-container::-webkit-scrollbar {
+  height: 6px;
+  width: 6px;
+}
+.custom-scrollbar::-webkit-scrollbar-track,
+.time-slots-container::-webkit-scrollbar-track {
+  background: transparent;
+}
+.custom-scrollbar::-webkit-scrollbar-thumb,
+.time-slots-container::-webkit-scrollbar-thumb {
+  background-color: var(--outline-variant);
+  border-radius: 9999px;
+}
+
+/* Animations */
+@keyframes float {
+  0% { transform: translateY(0px); }
+  50% { transform: translateY(-10px); }
+  100% { transform: translateY(0px); }
+}
+.animate-float {
+  animation: float 6s ease-in-out infinite;
+}
+.animate-float-delayed {
+  animation: float 6s ease-in-out infinite;
+  animation-delay: 3s;
+}
+
+@keyframes popIn {
+  0% { transform: scale(0.95); opacity: 0; }
+  100% { transform: scale(1); opacity: 1; }
+}
+.animate-pop-in {
+  animation: popIn 0.4s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+}
+
+@keyframes pulse-glow {
+  0%, 100% { opacity: 0.6; transform: scale(1); }
+  50% { opacity: 0.8; transform: scale(1.05); }
+}
+.animate-pulse-glow {
+  animation: pulse-glow 8s ease-in-out infinite;
+}
