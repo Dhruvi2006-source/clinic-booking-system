@@ -23,7 +23,7 @@ export default function PatientPortal() {
       {/* Bento Grid Dashboard */}
       <div className="grid grid-cols-1 md:grid-cols-12 gap-gutter relative z-10">
         {/* Upcoming Appointment (Large Featured) */}
-        <div className="md:col-span-8 bg-surface-container-lowest/80 backdrop-blur-md rounded-xl border border-outline-variant/30 p-8 shadow-level-2 hover:shadow-level-3 transition-all duration-300 flex flex-col justify-between">
+        <div className="md:col-span-8 bg-surface-container-lowest/80 backdrop-blur-md rounded-xl border border-outline-variant/30 p-5 sm:p-8 shadow-level-2 hover:shadow-level-3 transition-all duration-300 flex flex-col justify-between">
           <div>
             <div className="flex justify-between items-start mb-6">
               <div className="inline-flex items-center gap-2 bg-secondary-fixed text-on-secondary-fixed px-3 py-1.5 rounded-full font-label-md text-label-md font-semibold border border-outline-variant/30">
@@ -79,7 +79,7 @@ export default function PatientPortal() {
         </div>
 
         {/* Vitals Snippet with Sparklines */}
-        <div className="md:col-span-4 bg-surface-container-low/80 backdrop-blur-md rounded-xl border border-outline-variant/30 p-8 shadow-level-2">
+        <div className="md:col-span-4 bg-surface-container-low/80 backdrop-blur-md rounded-xl border border-outline-variant/30 p-5 sm:p-8 shadow-level-2">
           <div className="flex justify-between items-center mb-6">
             <h3 className="font-headline-md text-headline-md text-on-surface font-bold">
               Recent Vitals
@@ -128,7 +128,7 @@ export default function PatientPortal() {
         </div>
 
         {/* Medical Records & Results */}
-        <div className="md:col-span-4 bg-surface-container-lowest/80 backdrop-blur-md rounded-xl border border-outline-variant/30 p-8 shadow-level-2 hover:shadow-level-3 hover:-translate-y-1 transition-all duration-300 group cursor-pointer">
+        <div className="md:col-span-4 bg-surface-container-lowest/80 backdrop-blur-md rounded-xl border border-outline-variant/30 p-5 sm:p-8 shadow-level-2 hover:shadow-level-3 hover:-translate-y-1 transition-all duration-300 group cursor-pointer">
           <div className="bg-surface-container w-12 h-12 rounded-full flex items-center justify-center mb-6 text-on-surface group-hover:bg-primary-fixed transition-colors">
             <span className="material-symbols-outlined">folder_shared</span>
           </div>
@@ -145,7 +145,7 @@ export default function PatientPortal() {
         </div>
 
         {/* Prescriptions */}
-        <div className="md:col-span-4 bg-surface-container-lowest/80 backdrop-blur-md rounded-xl border border-outline-variant/30 p-8 shadow-level-2 hover:shadow-level-3 hover:-translate-y-1 transition-all duration-300 group cursor-pointer">
+        <div className="md:col-span-4 bg-surface-container-lowest/80 backdrop-blur-md rounded-xl border border-outline-variant/30 p-5 sm:p-8 shadow-level-2 hover:shadow-level-3 hover:-translate-y-1 transition-all duration-300 group cursor-pointer">
           <div className="bg-surface-container w-12 h-12 rounded-full flex items-center justify-center mb-6 text-on-surface group-hover:bg-primary-fixed transition-colors">
             <span className="material-symbols-outlined">prescriptions</span>
           </div>
@@ -163,7 +163,7 @@ export default function PatientPortal() {
 
         {/* Billing & Secure Messaging */}
         <div className="md:col-span-4 flex flex-col gap-gutter justify-between">
-          <div className="bg-surface-container-lowest/80 backdrop-blur-md rounded-xl border border-outline-variant/30 p-6 shadow-level-2 hover:shadow-level-3 transition-all duration-300 flex items-center justify-between cursor-pointer group">
+          <div className="bg-surface-container-lowest/80 backdrop-blur-md rounded-xl border border-outline-variant/30 p-4 sm:p-6 shadow-level-2 hover:shadow-level-3 transition-all duration-300 flex items-center justify-between cursor-pointer group">
             <div className="flex items-center gap-4">
               <div className="bg-surface-container w-10 h-10 rounded-full flex items-center justify-center text-on-surface">
                 <span className="material-symbols-outlined">receipt_long</span>
@@ -182,7 +182,7 @@ export default function PatientPortal() {
 
           <Link
             href="/portal/telehealth?tab=chat"
-            className="bg-surface-container-lowest/80 backdrop-blur-md rounded-xl border border-outline-variant/30 p-6 shadow-level-2 hover:shadow-level-3 transition-all duration-300 flex items-center justify-between cursor-pointer group"
+            className="bg-surface-container-lowest/80 backdrop-blur-md rounded-xl border border-outline-variant/30 p-4 sm:p-6 shadow-level-2 hover:shadow-level-3 transition-all duration-300 flex items-center justify-between cursor-pointer group"
           >
             <div className="flex items-center gap-4">
               <div className="relative">
@@ -203,7 +203,7 @@ export default function PatientPortal() {
             </span>
           </Link>
 
-          <div className="bg-surface-container-lowest/80 backdrop-blur-md rounded-xl border border-outline-variant/30 p-6 shadow-level-2 hover:shadow-level-3 transition-all duration-300 flex items-center justify-between cursor-pointer group">
+          <div className="bg-surface-container-lowest/80 backdrop-blur-md rounded-xl border border-outline-variant/30 p-4 sm:p-6 shadow-level-2 hover:shadow-level-3 transition-all duration-300 flex items-center justify-between cursor-pointer group">
             <div className="flex items-center gap-4">
               <div className="bg-surface-container w-10 h-10 rounded-full flex items-center justify-center text-on-surface">
                 <span className="material-symbols-outlined">settings</span>

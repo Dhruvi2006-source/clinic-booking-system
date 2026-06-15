@@ -16,7 +16,7 @@ export default function Footer() {
 
   return (
     <footer className="bg-surface-container-low border-t border-outline-variant w-full mt-auto transition-colors duration-300">
-      <div className="grid grid-cols-1 md:grid-cols-4 gap-section-gap px-margin-mobile md:px-margin-desktop py-section-gap max-w-container-max mx-auto">
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-8 lg:gap-12 px-margin-mobile md:px-margin-desktop py-12 md:py-16 max-w-container-max mx-auto">
         {/* Column 1: Find Us / Contact */}
         <div className="space-y-4">
           <Link

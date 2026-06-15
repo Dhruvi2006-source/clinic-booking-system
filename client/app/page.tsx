@@ -306,7 +306,7 @@ export default function WalkInClinicHomepage() {
       </section>
 
       {/* ================= ABOUT WALK-IN CLINIC SECTION ================= */}
-      <section className="py-24 px-margin-mobile md:px-margin-desktop bg-surface">
+      <section className="py-12 md:py-24 px-margin-mobile md:px-margin-desktop bg-surface">
         <div className="max-w-container-max mx-auto grid md:grid-cols-12 gap-gutter items-center">
           {/* About Copy */}
           <div className="md:col-span-7 space-y-6 reveal-on-scroll reveal-left">
@@ -361,7 +361,7 @@ export default function WalkInClinicHomepage() {
       </section>
 
       {/* ================= TABBED SERVICES SECTION ================= */}
-      <section className="py-24 px-margin-mobile md:px-margin-desktop bg-surface-container-low/40 border-y border-outline-variant/20">
+      <section className="py-12 md:py-24 px-margin-mobile md:px-margin-desktop bg-surface-container-low/40 border-y border-outline-variant/20">
         <div className="max-w-container-max mx-auto space-y-12">
           {/* Header */}
           <div className="text-center max-w-2xl mx-auto space-y-4 reveal-on-scroll">
@@ -487,7 +487,7 @@ export default function WalkInClinicHomepage() {
       </section>
 
       {/* ================= CLINIC VALUE PROPOSITIONS ================= */}
-      <section className="py-24 px-margin-mobile md:px-margin-desktop bg-surface">
+      <section className="py-12 md:py-24 px-margin-mobile md:px-margin-desktop bg-surface">
         <div className="max-w-container-max mx-auto space-y-16">
           <div className="text-center max-w-2xl mx-auto space-y-4 reveal-on-scroll">
             <span className="text-secondary font-bold text-xs uppercase tracking-widest font-label-md">
@@ -536,7 +536,7 @@ export default function WalkInClinicHomepage() {
             ].map((prop, idx) => (
               <div
                 key={idx}
-                className="bg-surface-container-low/50 border border-outline-variant/30 rounded-2xl p-8 space-y-4 shadow-sm hover:shadow-md transition-all duration-300 reveal-on-scroll reveal-scale"
+                className="bg-surface-container-low/50 border border-outline-variant/30 rounded-2xl p-5 sm:p-8 space-y-4 shadow-sm hover:shadow-md transition-all duration-300 reveal-on-scroll reveal-scale"
               >
                 <div className="w-12 h-12 rounded-xl bg-secondary/15 text-secondary flex items-center justify-center">
                   <span className="material-symbols-outlined text-2xl">{prop.icon}</span>
@@ -554,7 +554,7 @@ export default function WalkInClinicHomepage() {
       </section>
 
       {/* ================= CLINICAL TEAM SECTION ================= */}
-      <section className="py-24 px-margin-mobile md:px-margin-desktop bg-surface-container-low/40 border-y border-outline-variant/20">
+      <section className="py-12 md:py-24 px-margin-mobile md:px-margin-desktop bg-surface-container-low/40 border-y border-outline-variant/20">
         <div className="max-w-container-max mx-auto space-y-16">
           <div className="text-center max-w-2xl mx-auto space-y-4 reveal-on-scroll">
             <span className="text-secondary font-bold text-xs uppercase tracking-widest font-label-md">
@@ -598,7 +598,7 @@ export default function WalkInClinicHomepage() {
                 </div>
                 <div className="pt-6 mt-6 border-t border-outline-variant/20 text-xs text-on-surface-variant leading-relaxed">
                   <p className="font-medium mb-4">{doc.bio}</p>
-                  <div className="flex justify-between items-center">
+                  <div className="flex flex-col xs:flex-row gap-4 xs:gap-0 justify-between items-start xs:items-center">
                     <span className="text-[11px] font-bold text-slate-500">LANGUAGES: {doc.languages}</span>
                     <Link
                       href={`/book?doctor=${doc.id}`}
@@ -615,7 +615,7 @@ export default function WalkInClinicHomepage() {
       </section>
 
       {/* ================= TESTIMONIALS SECTION (Carousel) ================= */}
-      <section className="py-24 px-margin-mobile md:px-margin-desktop bg-surface">
+      <section className="py-12 md:py-24 px-margin-mobile md:px-margin-desktop bg-surface">
         <div className="max-w-3xl mx-auto space-y-12">
           <div className="text-center space-y-4 reveal-on-scroll">
             <span className="text-secondary font-bold text-xs uppercase tracking-widest font-label-md">
@@ -630,7 +630,7 @@ export default function WalkInClinicHomepage() {
           </div>
 
           {/* Testimonial card */}
-          <div className="relative bg-surface-container-low border border-outline-variant/30 p-8 rounded-3xl shadow-sm min-h-[240px] flex flex-col justify-between transition-all duration-300 reveal-on-scroll reveal-scale">
+          <div className="relative bg-surface-container-low border border-outline-variant/30 p-5 sm:p-8 rounded-3xl shadow-sm min-h-[240px] flex flex-col justify-between transition-all duration-300 reveal-on-scroll reveal-scale">
             <div className="space-y-4">
               <div className="flex justify-between items-center">
                 <div className="flex items-center gap-3">
@@ -702,7 +702,7 @@ export default function WalkInClinicHomepage() {
       </section>
 
       {/* ================= LATEST CLINICAL ARTICLES ================= */}
-      <section className="py-24 px-margin-mobile md:px-margin-desktop bg-surface">
+      <section className="py-12 md:py-24 px-margin-mobile md:px-margin-desktop bg-surface">
         <div className="max-w-container-max mx-auto space-y-16">
           <div className="text-center max-w-2xl mx-auto space-y-4 reveal-on-scroll">
             <span className="text-secondary font-bold text-xs uppercase tracking-widest font-label-md">
@@ -720,7 +720,7 @@ export default function WalkInClinicHomepage() {
             {dummyBlogs.map((blog, idx) => (
               <div
                 key={idx}
-                className="bg-surface-container-low border border-outline-variant/20 rounded-3xl p-8 flex flex-col justify-between shadow-sm group hover:shadow-md transition-all duration-300 reveal-on-scroll reveal-scale"
+                className="bg-surface-container-low border border-outline-variant/20 rounded-3xl p-5 sm:p-8 flex flex-col justify-between shadow-sm group hover:shadow-md transition-all duration-300 reveal-on-scroll reveal-scale"
               >
                 <div className="space-y-3">
                   <div className="flex justify-between items-center text-xs font-bold text-on-surface-variant">

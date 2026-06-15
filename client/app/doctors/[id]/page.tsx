@@ -125,15 +125,15 @@ export default function DoctorProfilePage({ params }: PageProps) {
             {doctor.bio}
           </p>
 
-          <div className="flex items-center gap-4">
+          <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-4 w-full sm:w-auto">
             <button
               onClick={scrollToBooking}
-              className="bg-primary text-on-primary text-label-md font-label-md px-8 py-4 rounded-full hover:scale-[1.02] hover:shadow-lg active:scale-[0.98] transition-all flex items-center gap-2 cursor-pointer font-semibold"
+              className="bg-primary text-on-primary text-label-md font-label-md px-8 py-4 rounded-full hover:scale-[1.02] hover:shadow-lg active:scale-[0.98] transition-all flex items-center justify-center gap-2 cursor-pointer font-semibold w-full sm:w-auto"
             >
               <span>Book Appointment</span>
               <span className="material-symbols-outlined text-[18px]">arrow_forward</span>
             </button>
-            <button className="bg-surface-container-lowest border border-outline-variant text-on-surface text-label-md font-label-md px-6 py-4 rounded-full hover:bg-surface-container-low transition-colors duration-200 flex items-center gap-2 cursor-pointer font-semibold">
+            <button className="bg-surface-container-lowest border border-outline-variant text-on-surface text-label-md font-label-md px-6 py-4 rounded-full hover:bg-surface-container-low transition-colors duration-200 flex items-center justify-center gap-2 cursor-pointer font-semibold w-full sm:w-auto">
               <span className="material-symbols-outlined text-[20px]">favorite</span>
               <span>Save Profile</span>
             </button>

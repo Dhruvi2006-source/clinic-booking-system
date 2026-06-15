@@ -332,7 +332,7 @@ function BookContent() {
               Select Appointment Date
             </h2>
 
-            <div className="bg-surface-container-lowest border border-outline-variant/60 rounded-3xl p-8 max-w-md mx-auto shadow-sm">
+            <div className="bg-surface-container-lowest border border-outline-variant/60 rounded-3xl p-4 sm:p-8 max-w-md mx-auto shadow-sm">
               <div className="flex justify-between items-center mb-6">
                 <h3 className="font-headline-md text-primary font-bold">
                   October 2024
@@ -418,7 +418,7 @@ function BookContent() {
               Choose Time Slot
             </h2>
 
-            <div className="bg-surface-container-lowest border border-outline-variant/60 rounded-3xl p-8 max-w-xl mx-auto shadow-sm space-y-6">
+            <div className="bg-surface-container-lowest border border-outline-variant/60 rounded-3xl p-4 sm:p-8 max-w-xl mx-auto shadow-sm space-y-6">
               <h3 className="font-headline-md text-primary font-bold text-center">
                 Available slots for {selectedDate}
               </h3>
@@ -455,7 +455,7 @@ function BookContent() {
 
             <div className="grid grid-cols-1 md:grid-cols-12 gap-8 items-start">
               {/* Form details */}
-              <div className="md:col-span-8 bg-surface-container-lowest border border-outline-variant/60 rounded-3xl p-8 shadow-sm">
+              <div className="md:col-span-8 bg-surface-container-lowest border border-outline-variant/60 rounded-3xl p-5 sm:p-8 shadow-sm">
                 <h2 className="text-headline-md font-headline-md text-primary mb-2 font-bold">
                   Patient Information
                 </h2>

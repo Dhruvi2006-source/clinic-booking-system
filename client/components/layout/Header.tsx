@@ -27,7 +27,8 @@ export default function Header() {
           <div className="flex flex-wrap items-center justify-center gap-x-6 gap-y-1 text-center sm:text-left">
             <span className="flex items-center gap-1.5 hover:text-white transition-colors">
               <span className="material-symbols-outlined text-[14px]">location_on</span>
-              {dummyAddress}
+              <span className="hidden md:inline">{dummyAddress}</span>
+              <span className="md:hidden">Midtown Manhattan, NYC</span>
             </span>
             <span className="hidden sm:inline text-white">|</span>
             <a href={`tel:${dummyPhone}`} className="flex items-center gap-1.5 text-white hover:text-secondary/80 transition-colors font-semibold">
@@ -53,7 +54,7 @@ export default function Header() {
             href="/"
             className="font-headline-lg-mobile text-headline-lg-mobile font-bold text-white flex items-center gap-2 tracking-tight group"
           >
-            <span className="material-symbols-outlined text-tertiary text-[98px] transition-transform duration-300 group-hover:rotate-12">
+            <span className="material-symbols-outlined text-tertiary text-[28px] transition-transform duration-300 group-hover:rotate-12">
               health_and_safety
             </span>
             <span>AuraClinic</span>

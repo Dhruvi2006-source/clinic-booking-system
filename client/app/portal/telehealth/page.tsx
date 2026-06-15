@@ -67,11 +67,11 @@ function TelehealthContent() {
   };
 
   return (
-    <main className="flex-grow flex overflow-hidden h-[calc(100vh-80px)] flex-col md:flex-row bg-background">
+    <main className="flex-grow flex overflow-y-auto md:overflow-hidden h-auto md:h-[calc(100vh-80px)] flex-col md:flex-row bg-background">
       {/* Video Stream Area */}
-      <div className="flex-grow relative bg-surface-container-low flex flex-col p-4">
+      <div className="w-full md:flex-grow relative bg-surface-container-low flex flex-col p-4 shrink-0 md:shrink">
         {/* Main Video Frame with Pulsing Call Border */}
-        <div className="w-full h-full rounded-lg overflow-hidden relative shadow-level-3 border-2 border-tertiary/20 group bg-slate-900 transition-all duration-300">
+        <div className="w-full aspect-[4/3] sm:aspect-video md:aspect-auto md:h-full rounded-lg overflow-hidden relative shadow-level-3 border-2 border-tertiary/20 group bg-slate-900 transition-all duration-300">
           {!cameraOff ? (
             <img
               alt="Doctor Consultation Video"
@@ -95,51 +95,51 @@ function TelehealthContent() {
           </div>
 
           {/* Call Control Center Panel */}
-          <div className="absolute bottom-8 left-1/2 -translate-x-1/2 flex items-center gap-4 bg-surface-container-lowest/95 backdrop-blur-md px-6 py-4 rounded-full shadow-level-3 border border-outline-variant/20 transition-opacity duration-300">
+          <div className="absolute bottom-4 md:bottom-8 left-1/2 -translate-x-1/2 flex items-center gap-2 md:gap-4 bg-surface-container-lowest/95 backdrop-blur-md px-4 md:px-6 py-2.5 md:py-4 rounded-full shadow-level-3 border border-outline-variant/20 transition-opacity duration-300">
             <button
               onClick={() => setMicMuted(!micMuted)}
-              className={`w-12 h-12 rounded-full flex items-center justify-center transition-colors cursor-pointer ${
+              className={`w-10 h-10 md:w-12 md:h-12 rounded-full flex items-center justify-center transition-colors cursor-pointer ${
                 micMuted
                   ? "bg-error text-on-error"
                   : "bg-surface-variant text-on-surface hover:bg-surface-container-high"
               }`}
               title={micMuted ? "Unmute Mic" : "Mute Mic"}
             >
-              <span className="material-symbols-outlined">
+              <span className="material-symbols-outlined text-[20px] md:text-[24px]">
                 {micMuted ? "mic_off" : "mic"}
               </span>
             </button>
             <button
               onClick={() => setCameraOff(!cameraOff)}
-              className={`w-12 h-12 rounded-full flex items-center justify-center transition-colors cursor-pointer ${
+              className={`w-10 h-10 md:w-12 md:h-12 rounded-full flex items-center justify-center transition-colors cursor-pointer ${
                 cameraOff
                   ? "bg-error text-on-error"
                   : "bg-surface-variant text-on-surface hover:bg-surface-container-high"
               }`}
               title={cameraOff ? "Turn Camera On" : "Turn Camera Off"}
             >
-              <span className="material-symbols-outlined">
+              <span className="material-symbols-outlined text-[20px] md:text-[24px]">
                 {cameraOff ? "videocam_off" : "videocam"}
               </span>
             </button>
             <button
               onClick={() => setScreenSharing(!screenSharing)}
-              className={`w-12 h-12 rounded-full flex items-center justify-center transition-colors cursor-pointer ${
+              className={`w-10 h-10 md:w-12 md:h-12 rounded-full flex items-center justify-center transition-colors cursor-pointer ${
                 screenSharing
                   ? "bg-tertiary text-white"
                   : "bg-surface-variant text-on-surface hover:bg-surface-container-high"
               }`}
               title={screenSharing ? "Stop Sharing" : "Share Screen"}
             >
-              <span className="material-symbols-outlined">screen_share</span>
+              <span className="material-symbols-outlined text-[20px] md:text-[24px]">screen_share</span>
             </button>
             <Link
               href="/portal"
-              className="w-12 h-12 rounded-full bg-error text-on-error flex items-center justify-center hover:opacity-90 transition-opacity ml-2 cursor-pointer shadow-md"
+              className="w-10 h-10 md:w-12 md:h-12 rounded-full bg-error text-on-error flex items-center justify-center hover:opacity-90 transition-opacity ml-2 cursor-pointer shadow-md"
               title="Hang Up"
             >
               <span
-                className="material-symbols-outlined font-fill animate-pulse"
+                className="material-symbols-outlined text-[20px] md:text-[24px] font-fill animate-pulse"
                 style={{ fontVariationSettings: "'FILL' 1" }}
               >
                 call_end
@@ -149,7 +149,7 @@ function TelehealthContent() {
         </div>
 
         {/* Self PIP View */}
-        <div className="absolute bottom-8 right-8 w-48 h-64 rounded-xl overflow-hidden shadow-level-3 border-2 border-surface-container-lowest z-10 bg-slate-800">
+        <div className="absolute bottom-4 right-4 md:bottom-8 md:right-8 w-24 h-32 sm:w-32 sm:h-44 md:w-48 md:h-64 rounded-xl overflow-hidden shadow-level-3 border-2 border-surface-container-lowest z-10 bg-slate-800">
           <img
             alt="Patient Local View"
             className="w-full h-full object-cover"
