@@ -47,12 +47,12 @@
   --color-error-container: var(--error-container);
   --color-on-error-container: var(--on-error-container);
 
-  /* Custom Border Radii */
+  /* Custom Border Radii - Premium 24px layout rounding */
   --radius-sm: 0.5rem;
   --radius-md: 1rem;
-  --radius-lg: 1.5rem;
-  --radius-xl: 2.5rem;
-  --radius-2xl: 4rem;
+  --radius-lg: 1.5rem; /* 24px rounded corners */
+  --radius-xl: 1.75rem; /* 28px rounded corners */
+  --radius-2xl: 2.5rem;
   --radius-full: 9999px;
 
   /* Custom Spacings */
@@ -63,9 +63,9 @@
   --spacing-section-gap: 80px;
   --spacing-margin-mobile: 20px;
 
-  /* Font Families mapped to Next.js variables */
-  --font-inter: var(--font-inter);
-  --font-geist: var(--font-geist-sans);
+  /* Font Families mapped to Standard Google Fonts & system fallbacks */
+  --font-inter: "Inter", "Montserrat", system-ui, sans-serif;
+  --font-geist: "Inter", "Montserrat", system-ui, sans-serif;
 
   /* Typography shortcuts */
   --font-display-lg: var(--font-inter), sans-serif;
@@ -74,7 +74,7 @@
   --font-headline-md: var(--font-inter), sans-serif;
   --font-body-lg: var(--font-inter), sans-serif;
   --font-body-md: var(--font-inter), sans-serif;
-  --font-label-md: var(--font-geist-sans), sans-serif;
+  --font-label-md: var(--font-inter), sans-serif;
   --font-caption: var(--font-inter), sans-serif;
 
   /* Custom Font Sizes */
@@ -90,96 +90,96 @@
 
 /* Light theme values */
 :root {
-  --background: #f8f9ff;
-  --on-background: #0b1c30;
+  --background: #FAFBFC; /* Warm White */
+  --on-background: #0B1F3A; /* Deep Navy */
   
-  --primary-fixed: #dae2fd;
-  --primary-fixed-dim: #bec6e0;
-  --on-primary-fixed: #131b2e;
-  --on-primary-fixed-variant: #3f465c;
+  --primary-fixed: #e2f0fd;
+  --primary-fixed-dim: #cbdff7;
+  --on-primary-fixed: #0B1F3A;
+  --on-primary-fixed-variant: #4F8EF7;
   
-  --surface: #f8f9ff;
-  --on-surface: #0b1c30;
-  --on-surface-variant: #45464d;
+  --surface: #FAFBFC;
+  --on-surface: #0B1F3A;
+  --on-surface-variant: #526069;
   
-  --surface-bright: #f8f9ff;
-  --surface-dim: #cbdbf5;
+  --surface-bright: #FAFBFC;
+  --surface-dim: #e2e8f0;
   
   --surface-container-lowest: #ffffff;
-  --surface-container-low: #eff4ff;
-  --surface-container: #e5eeff;
-  --surface-container-high: #dce9ff;
-  --surface-container-highest: #d3e4fe;
+  --surface-container-low: #f5f7fa;
+  --surface-container: #edf0f5;
+  --surface-container-high: #e2e6f0;
+  --surface-container-highest: #d2d8e5;
   
-  --primary: #0f172a; /* Deep Navy */
+  --primary: #0B1F3A; /* Deep Navy */
   --on-primary: #ffffff;
-  --primary-container: #131b2e;
-  --on-primary-container: #7c839b;
-  --inverse-primary: #bec6e0;
+  --primary-container: #0f274a;
+  --on-primary-container: #8fb1d6;
+  --inverse-primary: #cbdff7;
   
-  --secondary: #526069;
+  --secondary: #4F8EF7; /* Soft Blue */
   --on-secondary: #ffffff;
-  --secondary-container: #d3e2ed;
-  --on-secondary-container: #56656e;
+  --secondary-container: #e6f0ff;
+  --on-secondary-container: #4F8EF7;
   
-  --tertiary: #3b82f6; /* Accent Blue */
-  --on-tertiary: #ffffff;
-  --tertiary-container: #001a42;
-  --on-tertiary-container: #3980f4;
+  --tertiary: #74D7E8; /* Soft Cyan */
+  --on-tertiary: #0B1F3A;
+  --tertiary-container: #eefcfd;
+  --on-tertiary-container: #3aa2b2;
   
-  --outline: #76777d;
-  --outline-variant: #c6c6cd;
+  --outline: #94a3b8;
+  --outline-variant: #e2e8f0;
   
   --error: #ba1a1a;
   --on-error: #ffffff;
   --error-container: #ffdad6;
   --on-error-container: #93000a;
 
-  --shadow-tint: rgba(15, 23, 42, 0.04);
-  --shadow-tint-hover: rgba(15, 23, 42, 0.08);
+  --shadow-tint: rgba(11, 31, 58, 0.04);
+  --shadow-tint-hover: rgba(11, 31, 58, 0.08);
 }
 
 /* Dark theme values */
 .dark {
-  --background: #030712; /* Deep Black */
-  --on-background: #f9fafb;
+  --background: #050b14; /* Deep premium dark navy */
+  --on-background: #f1f5f9;
   
-  --primary-fixed: #1f2937;
-  --primary-fixed-dim: #111827;
-  --on-primary-fixed: #f9fafb;
-  --on-primary-fixed-variant: #9ca3af;
+  --primary-fixed: #0f1c2d;
+  --primary-fixed-dim: #07111c;
+  --on-primary-fixed: #f1f5f9;
+  --on-primary-fixed-variant: #94a3b8;
   
-  --surface: #030712;
-  --on-surface: #f9fafb;
-  --on-surface-variant: #9ca3af;
+  --surface: #050b14;
+  --on-surface: #f1f5f9;
+  --on-surface-variant: #94a3b8;
   
-  --surface-bright: #111827;
-  --surface-dim: #030712;
+  --surface-bright: #0f1c2d;
+  --surface-dim: #050b14;
   
-  --surface-container-lowest: #090d16;
-  --surface-container-low: #111827;
-  --surface-container: #1f2937;
-  --surface-container-high: #374151;
-  --surface-container-highest: #4b5563;
+  --surface-container-lowest: #080f1b;
+  --surface-container-low: #0f172a;
+  --surface-container: #1e293b;
+  --surface-container-high: #334155;
+  --surface-container-highest: #475569;
   
-  --primary: #f9fafb; /* Pure White */
-  --on-primary: #030712;
-  --primary-container: #1f2937;
-  --on-primary-container: #cbd5e1;
-  --inverse-primary: #374151;
+  --primary: #f1f5f9; /* Warm White */
+  --on-primary: #050b14;
+  --primary-container: #1e293b;
+  --on-primary-container: #e2e8f0;
+  --inverse-primary: #334155;
   
-  --secondary: #9ca3af;
-  --on-secondary: #030712;
-  --secondary-container: #1f2937;
+  --secondary: #4F8EF7; /* Soft Blue */
+  --on-secondary: #050b14;
+  --secondary-container: #1e293b;
   --on-secondary-container: #cbd5e1;
   
-  --tertiary: #60a5fa; /* Light Accent Blue */
-  --on-tertiary: #030712;
-  --tertiary-container: #1e3a8a;
-  --on-tertiary-container: #93c5fd;
+  --tertiary: #74D7E8; /* Soft Cyan */
+  --on-tertiary: #050b14;
+  --tertiary-container: #0b1f3a;
+  --on-tertiary-container: #74D7E8;
   
-  --outline: #4b5563;
-  --outline-variant: #374151;
+  --outline: #475569;
+  --outline-variant: #1e293b;
   
   --error: #ef4444;
   --on-error: #ffffff;
@@ -217,6 +217,8 @@ body {
   border: 1px solid var(--outline-variant);
   transition: border-color 0.2s ease;
 }
+
+/* Glassmorphism Accents */
 .glass-panel {
   background: rgba(255, 255, 255, 0.03);
   backdrop-filter: blur(20px);
@@ -226,6 +228,20 @@ body {
 .light .glass-panel {
   background: rgba(255, 255, 255, 0.7);
   border: 1px solid rgba(255, 255, 255, 0.4);
+}
+
+/* Translucent Frosted Glass surfaces matching color system */
+.translucent-glass {
+  background: rgba(8, 15, 27, 0.65);
+  backdrop-filter: blur(24px);
+  -webkit-backdrop-filter: blur(24px);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+}
+.light .translucent-glass {
+  background: rgba(250, 251, 252, 0.75);
+  backdrop-filter: blur(24px);
+  -webkit-backdrop-filter: blur(24px);
+  border: 1px solid rgba(11, 31, 58, 0.06);
 }
 
 .material-symbols-outlined {
@@ -277,9 +293,106 @@ body {
 }
 
 @keyframes pulse-glow {
-  0%, 100% { opacity: 0.6; transform: scale(1); }
-  50% { opacity: 0.8; transform: scale(1.05); }
+  0%, 100% { opacity: 0.5; transform: scale(1); }
+  50% { opacity: 0.7; transform: scale(1.03); }
 }
 .animate-pulse-glow {
   animation: pulse-glow 8s ease-in-out infinite;
 }
+
+/* Scroll Reveal Utilities */
+.reveal-on-scroll {
+  opacity: 0;
+  transform: translateY(30px);
+  transition: opacity 0.8s cubic-bezier(0.16, 1, 0.3, 1), transform 0.8s cubic-bezier(0.16, 1, 0.3, 1);
+  will-change: transform, opacity;
+}
+
+.reveal-on-scroll.reveal-left {
+  transform: translateX(-40px);
+}
+
+.reveal-on-scroll.reveal-right {
+  transform: translateX(40px);
+}
+
+.reveal-on-scroll.reveal-scale {
+  transform: scale(0.95);
+}
+
+.reveal-on-scroll.reveal-active {
+  opacity: 1;
+  transform: translate(0) scale(1);
+}
+
+/* Hero Slide & Image Animations (Ken Burns Zoom, Staggered high-rise, and slide left/right) */
+@keyframes kenburns {
+  0% {
+    transform: scale(1.02) translate(0px, 0px);
+  }
+  100% {
+    transform: scale(1.08) translate(-6px, -4px);
+  }
+}
+.animate-ken-burns {
+  animation: kenburns 10s cubic-bezier(0.25, 0.46, 0.45, 0.94) infinite alternate;
+}
+
+@keyframes slideUpFade {
+  0% {
+    opacity: 0;
+    transform: translateY(55px); /* Raised starting position for a more dramatic entrance */
+  }
+  100% {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.animate-slide-up-fade {
+  opacity: 0;
+  animation: slideUpFade 0.85s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+}
+
+@keyframes slideInImgRight {
+  0% {
+    opacity: 0;
+    transform: translateX(8%) scale(1.04);
+  }
+  100% {
+    opacity: 1;
+    transform: translateX(0) scale(1);
+  }
+}
+.animate-slide-img-right {
+  animation: slideInImgRight 1.2s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+}
+
+@keyframes slideInImgLeft {
+  0% {
+    opacity: 0;
+    transform: translateX(-8%) scale(1.04);
+  }
+  100% {
+    opacity: 1;
+    transform: translateX(0) scale(1);
+  }
+}
+.animate-slide-img-left {
+  animation: slideInImgLeft 1.2s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+}
+
+.animation-delay-200 {
+  animation-delay: 200ms;
+}
+
+.animation-delay-400 {
+  animation-delay: 400ms;
+}
+
+.animation-delay-600 {
+  animation-delay: 600ms;
+}
+
+
+
