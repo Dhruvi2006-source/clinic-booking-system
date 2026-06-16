@@ -3,7 +3,6 @@
 import Link from "next/link";
 import { useSearchParams } from "next/navigation";
 import { useState, useEffect, Suspense } from "react";
-import { mockDoctors } from "@/lib/mockData";
 import { Doctor } from "@/types";
 
 function DirectoryContent() {
@@ -15,6 +14,10 @@ function DirectoryContent() {
   const [locationFilter, setLocationFilter] = useState("");
   const [quickFilter, setQuickFilter] = useState<string | null>(null);
 
+  const [doctors, setDoctors] = useState<Doctor[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
+
   // Initialize from URL search parameters if present
   useEffect(() => {
     const spec = searchParams.get("specialty");
@@ -23,8 +26,49 @@ function DirectoryContent() {
     if (loc) setLocationFilter(loc);
   }, [searchParams]);
 
+  useEffect(() => {
+    const fetchDoctors = async () => {
+      try {
+        const res = await fetch("http://localhost:5000/api/doctors");
+        const json = await res.json();
+        if (json.success) {
+          const mapped = json.data.map((doc: any) => ({
+            id: doc.id,
+            name: doc.name,
+            title: "MD, Board-Certified",
+            specialty: doc.specialty,
+            rating: doc.rating,
+            reviewsCount: Math.floor(doc.rating * 25) + 12,
+            avatar: doc.image || "https://images.unsplash.com/photo-1622253692010-333f2da6031d?auto=format&fit=crop&w=256&q=80",
+            bio: doc.bio,
+            experience: `${doc.experience}+ Years`,
+            languages: ["English", "Spanish"],
+            location: "Midtown Manhattan Suite, NY",
+            nextAvailable: "Today, 2:00 PM",
+            verified: true,
+            availableToday: true,
+            telehealth: true,
+            initialConsultationFee: doc.consultationFee,
+            boardCertifications: [
+              { title: `${doc.specialty} Specialist`, board: `American Board of ${doc.specialty}` }
+            ],
+            specialties: [doc.specialty, "Preventive Exams", "Chronic Care Management"]
+          }));
+          setDoctors(mapped);
+        } else {
+          setError(json.message || "Failed to load doctors");
+        }
+      } catch (err: any) {
+        setError(err.message || "Failed to fetch doctors");
+      } finally {
+        setLoading(false);
+      }
+    };
+    fetchDoctors();
+  }, []);
+
   // Derived filtered doctors
-  const filteredDoctors = mockDoctors.filter((doc) => {
+  const filteredDoctors = doctors.filter((doc) => {
     // Search Name or Specialty or Bio
     const matchSearch =
       searchTerm === "" ||
@@ -176,7 +220,17 @@ function DirectoryContent() {
           </span>
         </div>
 
-        {filteredDoctors.length > 0 ? (
+        {loading ? (
+          <div className="flex justify-center items-center py-24 w-full">
+            <span className="animate-spin material-symbols-outlined text-4xl text-primary">sync</span>
+          </div>
+        ) : error ? (
+          <div className="bg-surface-container-lowest rounded-xl p-12 text-center soft-border w-full">
+            <span className="material-symbols-outlined text-red-500 text-5xl mb-4">error</span>
+            <h3 className="font-headline-md text-headline-md text-red-500 mb-2 font-semibold">Error Loading Doctors</h3>
+            <p className="text-on-surface-variant font-body-md text-body-md max-w-md mx-auto">{error}</p>
+          </div>
+        ) : filteredDoctors.length > 0 ? (
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
             {filteredDoctors.map((doc) => (
               <div

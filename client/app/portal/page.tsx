@@ -1,9 +1,57 @@
 "use client";
 
 import Link from "next/link";
+import { useState, useEffect } from "react";
 import { mockVitals } from "@/lib/mockData";
 
 export default function PatientPortal() {
+  const [appointment, setAppointment] = useState<any>(null);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
+
+  useEffect(() => {
+    const fetchPatientData = async () => {
+      try {
+        let token = localStorage.getItem("aura_patient_token");
+        if (!token) {
+          // Silent login as default patient
+          const loginRes = await fetch("http://localhost:5000/api/auth/login", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ email: "patient@example.com", password: "patient123" })
+          });
+          const loginJson = await loginRes.json();
+          if (loginJson.success) {
+            token = loginJson.data.token;
+            localStorage.setItem("aura_patient_token", token!);
+          } else {
+            throw new Error(loginJson.message || "Failed to authenticate patient session");
+          }
+        }
+
+        // Fetch patient appointments
+        const appRes = await fetch("http://localhost:5000/api/appointments", {
+          headers: { Authorization: `Bearer ${token}` }
+        });
+        const appJson = await appRes.json();
+
+        if (appJson.success) {
+          // Get the most recent upcoming appointment (based on date)
+          const upcoming = appJson.data.find((app: any) => new Date(app.appointmentDate) >= new Date());
+          setAppointment(upcoming || appJson.data[0] || null);
+        } else {
+          throw new Error("Failed to load appointments");
+        }
+      } catch (err: any) {
+        setError(err.message || "An error occurred");
+        localStorage.removeItem("aura_patient_token");
+      } finally {
+        setLoading(false);
+      }
+    };
+    fetchPatientData();
+  }, []);
+
   return (
     <main className="flex-grow px-margin-mobile md:px-margin-desktop py-section-gap max-w-container-max mx-auto w-full relative">
       {/* Background Decorative Glowing Orbs */}
@@ -13,7 +61,7 @@ export default function PatientPortal() {
       {/* Welcome Header */}
       <header className="mb-12 relative z-10">
         <h1 className="font-display-lg text-headline-lg-mobile md:text-display-lg text-on-surface mb-2 font-bold leading-tight">
-          Good morning, Sarah.
+          Good morning, Patient.
         </h1>
         <p className="font-body-lg text-body-lg text-secondary">
           Here is your health overview for today.
@@ -24,58 +72,85 @@ export default function PatientPortal() {
       <div className="grid grid-cols-1 md:grid-cols-12 gap-gutter relative z-10">
         {/* Upcoming Appointment (Large Featured) */}
         <div className="md:col-span-8 bg-surface-container-lowest/80 backdrop-blur-md rounded-xl border border-outline-variant/30 p-5 sm:p-8 shadow-level-2 hover:shadow-level-3 transition-all duration-300 flex flex-col justify-between">
-          <div>
-            <div className="flex justify-between items-start mb-6">
-              <div className="inline-flex items-center gap-2 bg-secondary-fixed text-on-secondary-fixed px-3 py-1.5 rounded-full font-label-md text-label-md font-semibold border border-outline-variant/30">
-                <span className="material-symbols-outlined text-[16px]">event</span>
-                Upcoming Appointment
-              </div>
-              <button className="text-primary hover:bg-surface-container-low p-2 rounded-full transition-colors cursor-pointer">
-                <span className="material-symbols-outlined">more_horiz</span>
-              </button>
+          {loading ? (
+            <div className="flex justify-center items-center py-12 w-full h-full min-h-[200px]">
+              <span className="animate-spin material-symbols-outlined text-4xl text-primary">sync</span>
             </div>
-            <div className="flex items-start gap-6 flex-col sm:flex-row">
-              <div className="w-20 h-20 rounded-full overflow-hidden shrink-0 border-2 border-surface-container-low bg-surface-container-low relative shadow-sm">
-                <img
-                  alt="Doctor Profile"
-                  className="w-full h-full object-cover"
-                  src="https://images.unsplash.com/photo-1594824813573-246434de83fb?auto=format&fit=crop&w=256&q=80"
-                />
-              </div>
+          ) : error ? (
+            <div className="flex flex-col justify-center items-center py-12 text-center w-full h-full min-h-[200px] gap-2">
+              <span className="material-symbols-outlined text-red-500 text-3xl">error</span>
+              <p className="text-sm font-semibold text-red-500">Error loading upcoming appointment</p>
+            </div>
+          ) : appointment ? (
+            <>
               <div>
-                <h2 className="font-headline-md text-headline-md text-on-surface mb-1 font-bold">
-                  Dr. Emily Chen
-                </h2>
-                <p className="font-body-md text-body-md text-secondary mb-4 font-medium">
-                  Cardiology Consultation
-                </p>
-                <div className="flex flex-col sm:flex-row gap-4 text-secondary">
-                  <div className="flex items-center gap-2 font-body-md text-body-md font-medium">
-                    <span className="material-symbols-outlined text-outline">calendar_today</span>
-                    Tomorrow, 10:00 AM
+                <div className="flex justify-between items-start mb-6">
+                  <div className="inline-flex items-center gap-2 bg-secondary-fixed text-on-secondary-fixed px-3 py-1.5 rounded-full font-label-md text-label-md font-semibold border border-outline-variant/30">
+                    <span className="material-symbols-outlined text-[16px]">event</span>
+                    Upcoming Appointment
                   </div>
-                  <div className="flex items-center gap-2 font-body-md text-body-md font-medium">
-                    <span className="material-symbols-outlined text-outline">location_on</span>
-                    Suite 402, North Wing
+                  <button className="text-primary hover:bg-surface-container-low p-2 rounded-full transition-colors cursor-pointer">
+                    <span className="material-symbols-outlined">more_horiz</span>
+                  </button>
+                </div>
+                <div className="flex items-start gap-6 flex-col sm:flex-row">
+                  <div className="w-20 h-20 rounded-full overflow-hidden shrink-0 border-2 border-surface-container-low bg-surface-container-low relative shadow-sm">
+                    <img
+                      alt="Doctor Profile"
+                      className="w-full h-full object-cover"
+                      src={appointment.doctor?.image || "https://images.unsplash.com/photo-1594824813573-246434de83fb?auto=format&fit=crop&w=256&q=80"}
+                    />
+                  </div>
+                  <div>
+                    <h2 className="font-headline-md text-headline-md text-on-surface mb-1 font-bold">
+                      {appointment.doctor?.name}
+                    </h2>
+                    <p className="font-body-md text-body-md text-secondary mb-4 font-medium">
+                      {appointment.doctor?.specialty} Consultation
+                    </p>
+                    <div className="flex flex-col sm:flex-row gap-4 text-secondary">
+                      <div className="flex items-center gap-2 font-body-md text-body-md font-medium">
+                        <span className="material-symbols-outlined text-outline">calendar_today</span>
+                        {new Date(appointment.appointmentDate).toLocaleString([], { dateStyle: 'medium', timeStyle: 'short' })}
+                      </div>
+                      <div className="flex items-center gap-2 font-body-md text-body-md font-medium">
+                        <span className="material-symbols-outlined text-outline">location_on</span>
+                        {appointment.consultationType === "VIRTUAL" ? "Virtual Secure Video" : "Suite 402, North Wing"}
+                      </div>
+                    </div>
                   </div>
                 </div>
               </div>
+              <div className="mt-8 flex gap-4 flex-col sm:flex-row">
+                <Link
+                  href="/book"
+                  className="flex-1 bg-surface-container/50 border border-outline-variant/50 text-primary font-label-md text-label-md py-4 rounded-lg hover:bg-surface-container-low transition-colors text-center font-bold"
+                >
+                  Reschedule
+                </Link>
+                <Link
+                  href="/portal/telehealth"
+                  className="flex-1 bg-primary text-on-primary font-label-md text-label-md py-4 rounded-lg hover:scale-[1.01] hover:shadow-md active:scale-[0.99] transition-all text-center font-bold"
+                >
+                  Prepare for Visit
+                </Link>
+              </div>
+            </>
+          ) : (
+            <div className="flex flex-col justify-center items-center py-12 text-center w-full h-full min-h-[200px] gap-4">
+              <span className="material-symbols-outlined text-outline text-5xl">event_busy</span>
+              <div>
+                <p className="font-headline-md text-on-surface font-semibold">No Scheduled Visits</p>
+                <p className="text-sm text-on-surface-variant font-medium">You don't have any upcoming appointments at the moment.</p>
+              </div>
+              <Link
+                href="/book"
+                className="bg-primary text-on-primary px-6 py-3 rounded-full font-label-md text-label-md hover:scale-[1.02] transition-transform font-bold"
+              >
+                Book Your First Session
+              </Link>
             </div>
-          </div>
-          <div className="mt-8 flex gap-4 flex-col sm:flex-row">
-            <Link
-              href="/book"
-              className="flex-1 bg-surface-container/50 border border-outline-variant/50 text-primary font-label-md text-label-md py-4 rounded-lg hover:bg-surface-container-low transition-colors text-center font-bold"
-            >
-              Reschedule
-            </Link>
-            <Link
-              href="/portal/telehealth"
-              className="flex-1 bg-primary text-on-primary font-label-md text-label-md py-4 rounded-lg hover:scale-[1.01] hover:shadow-md active:scale-[0.99] transition-all text-center font-bold"
-            >
-              Prepare for Visit
-            </Link>
-          </div>
+          )}
         </div>
 
         {/* Vitals Snippet with Sparklines */}

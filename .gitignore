@@ -1,0 +1,41 @@
+# Dependencies
+client/node_modules/
+server/node_modules/
+
+# Environment variables
+client/.env
+client/.env.*
+server/.env
+server/.env.*
+
+# Logs
+*.log
+logs/
+
+# Build folders
+client/build/
+client/dist/
+client/.next/
+
+server/dist/
+server/build/
+
+# Coverage
+coverage/
+
+# Cache
+.cache/
+.parcel-cache/
+.vite/
+.eslintcache
+
+# OS files
+.DS_Store
+Thumbs.db
+
+# IDE files
+.vscode/
+.idea/
+
+# TypeScript
+*.tsbuildinfo

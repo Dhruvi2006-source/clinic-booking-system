@@ -3,7 +3,6 @@
 import Link from "next/link";
 import { useRouter, useSearchParams } from "next/navigation";
 import { useState, useEffect, Suspense } from "react";
-import { mockDoctors } from "@/lib/mockData";
 import { Doctor } from "@/types";
 
 function BookContent() {
@@ -27,15 +26,66 @@ function BookContent() {
   // Specialist filter in step 1
   const [specialtyFilter, setSpecialtyFilter] = useState<string>("All");
 
-  // Handle URL pre-selection from Homepage or Doctor Profile
+  const [doctors, setDoctors] = useState<Doctor[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
+  
+  const [bookingLoading, setBookingLoading] = useState(false);
+  const [bookingError, setBookingError] = useState<string | null>(null);
+
+  // Fetch doctors on mount
   useEffect(() => {
+    const fetchDoctors = async () => {
+      try {
+        const res = await fetch("http://localhost:5000/api/doctors");
+        const json = await res.json();
+        if (json.success) {
+          const mapped = json.data.map((doc: any) => ({
+            id: doc.id,
+            name: doc.name,
+            title: "MD, Board-Certified",
+            specialty: doc.specialty,
+            rating: doc.rating,
+            reviewsCount: Math.floor(doc.rating * 25) + 12,
+            avatar: doc.image || "https://images.unsplash.com/photo-1622253692010-333f2da6031d?auto=format&fit=crop&w=256&q=80",
+            bio: doc.bio,
+            experience: `${doc.experience}+ Years`,
+            languages: ["English", "Spanish"],
+            location: "Midtown Manhattan Suite, NY",
+            nextAvailable: "Today, 2:00 PM",
+            verified: true,
+            availableToday: true,
+            telehealth: true,
+            initialConsultationFee: doc.consultationFee,
+            boardCertifications: [
+              { title: `${doc.specialty} Specialist`, board: `American Board of ${doc.specialty}` }
+            ],
+            specialties: [doc.specialty, "Preventive Exams", "Chronic Care Management"]
+          }));
+          setDoctors(mapped);
+        } else {
+          setError(json.message || "Failed to load doctors");
+        }
+      } catch (err: any) {
+        setError(err.message || "Failed to fetch doctors");
+      } finally {
+        setLoading(false);
+      }
+    };
+    fetchDoctors();
+  }, []);
+
+  // Handle URL pre-selection once doctors are loaded
+  useEffect(() => {
+    if (doctors.length === 0) return;
+
     const docId = searchParams.get("doctor");
     const type = searchParams.get("type");
     const date = searchParams.get("date");
     const time = searchParams.get("time");
 
     if (docId) {
-      const doc = mockDoctors.find((d) => d.id === docId);
+      const doc = doctors.find((d) => d.id === docId);
       if (doc) {
         setSelectedDoctor(doc);
         setStep(2); // Skip Step 1 if doctor is prefilled
@@ -53,7 +103,7 @@ function BookContent() {
       setSelectedTime(time);
       setStep(5); // Go directly to patient info if everything is filled
     }
-  }, [searchParams]);
+  }, [searchParams, doctors]);
 
   const handleSelectDoctor = (doctor: Doctor) => {
     setSelectedDoctor(doctor);
@@ -74,13 +124,52 @@ function BookContent() {
     setStep(5);
   };
 
-  const handleFormSubmit = (e: React.FormEvent) => {
+  const handleFormSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    setStep(6);
+    if (!selectedDoctor || !consultationType || !selectedDate || !selectedTime) {
+      setBookingError("Please complete all booking steps first.");
+      return;
+    }
+
+    setBookingLoading(true);
+    setBookingError(null);
+
+    try {
+      const dateTimeString = `${selectedDate} ${selectedTime}`;
+      const appointmentDate = new Date(dateTimeString).toISOString();
+
+      const payload = {
+        doctorId: selectedDoctor.id,
+        patientName: `${firstName} ${lastName}`,
+        patientEmail: email,
+        patientPhone: phone,
+        consultationType: consultationType === "Virtual" ? "VIRTUAL" : "IN_CLINIC",
+        appointmentDate
+      };
+
+      const res = await fetch("http://localhost:5000/api/appointments", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json"
+        },
+        body: JSON.stringify(payload)
+      });
+
+      const json = await res.json();
+      if (json.success) {
+        setStep(6);
+      } else {
+        setBookingError(json.message || "Failed to confirm appointment");
+      }
+    } catch (err: any) {
+      setBookingError(err.message || "A network error occurred while booking");
+    } finally {
+      setBookingLoading(false);
+    }
   };
 
   // Filter doctors for step 1
-  const filteredDoctors = mockDoctors.filter((doc) => {
+  const filteredDoctors = doctors.filter((doc) => {
     if (specialtyFilter === "All") return true;
     return doc.specialty.toLowerCase() === specialtyFilter.toLowerCase();
   });
@@ -178,41 +267,53 @@ function BookContent() {
               </div>
             </div>
 
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-              {filteredDoctors.map((doc) => (
-                <div
-                  key={doc.id}
-                  onClick={() => handleSelectDoctor(doc)}
-                  className={`bg-surface-container-lowest border rounded-3xl p-6 shadow-sm hover:shadow-md hover:border-secondary transition-all duration-300 flex gap-5 cursor-pointer items-center group ${
-                    selectedDoctor?.id === doc.id ? "border-primary ring-2 ring-primary/15" : "border-outline-variant/40"
-                  }`}
-                >
-                  <img
-                    alt={doc.name}
-                    className="w-20 h-20 rounded-full object-cover border-2 border-surface-container-low"
-                    src={doc.avatar}
-                  />
-                  <div className="space-y-1">
-                    <h3 className="font-headline-md text-primary font-bold group-hover:text-secondary transition-colors">
-                      {doc.name}
-                    </h3>
-                    <p className="text-label-md text-secondary font-bold">
-                      {doc.specialty}
-                    </p>
-                    <div className="flex items-center gap-3 text-xs text-on-surface-variant font-medium">
-                      <span className="flex items-center gap-0.5">
-                        <span className="material-symbols-outlined text-yellow-500 font-fill text-sm" style={{ fontVariationSettings: "'FILL' 1" }}>
-                          star
+            {loading ? (
+              <div className="flex justify-center items-center py-24 w-full">
+                <span className="animate-spin material-symbols-outlined text-4xl text-primary">sync</span>
+              </div>
+            ) : error ? (
+              <div className="bg-surface-container-lowest rounded-xl p-12 text-center soft-border w-full">
+                <span className="material-symbols-outlined text-red-500 text-5xl mb-4">error</span>
+                <h3 className="font-headline-md text-headline-md text-red-500 mb-2 font-semibold">Error Loading Doctors</h3>
+                <p className="text-on-surface-variant font-body-md text-body-md max-w-md mx-auto">{error}</p>
+              </div>
+            ) : (
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                {filteredDoctors.map((doc) => (
+                  <div
+                    key={doc.id}
+                    onClick={() => handleSelectDoctor(doc)}
+                    className={`bg-surface-container-lowest border rounded-3xl p-6 shadow-sm hover:shadow-md hover:border-secondary transition-all duration-300 flex gap-5 cursor-pointer items-center group ${
+                      selectedDoctor?.id === doc.id ? "border-primary ring-2 ring-primary/15" : "border-outline-variant/40"
+                    }`}
+                  >
+                    <img
+                      alt={doc.name}
+                      className="w-20 h-20 rounded-full object-cover border-2 border-surface-container-low"
+                      src={doc.avatar}
+                    />
+                    <div className="space-y-1">
+                      <h3 className="font-headline-md text-primary font-bold group-hover:text-secondary transition-colors">
+                        {doc.name}
+                      </h3>
+                      <p className="text-label-md text-secondary font-bold">
+                        {doc.specialty}
+                      </p>
+                      <div className="flex items-center gap-3 text-xs text-on-surface-variant font-medium">
+                        <span className="flex items-center gap-0.5">
+                          <span className="material-symbols-outlined text-yellow-500 font-fill text-sm" style={{ fontVariationSettings: "'FILL' 1" }}>
+                            star
+                          </span>
+                          {doc.rating}
                         </span>
-                        {doc.rating}
-                      </span>
-                      <span>•</span>
-                      <span>Next: {doc.nextAvailable}</span>
+                        <span>•</span>
+                        <span>Next: {doc.nextAvailable}</span>
+                      </div>
                     </div>
                   </div>
-                </div>
-              ))}
-            </div>
+                ))}
+              </div>
+            )}
           </div>
         )}
 
@@ -522,11 +623,18 @@ function BookContent() {
                     ></textarea>
                   </div>
 
+                  {bookingError && (
+                    <div className="p-4 bg-red-100 border border-red-200 text-red-700 rounded-xl text-sm font-semibold">
+                      {bookingError}
+                    </div>
+                  )}
+
                   <button
-                    className="bg-primary text-on-primary px-8 py-4 rounded-full font-label-md text-label-md hover:scale-[1.02] hover:shadow-lg active:scale-[0.98] transition-all w-full cursor-pointer font-bold"
+                    disabled={bookingLoading}
+                    className="bg-primary text-on-primary px-8 py-4 rounded-full font-label-md text-label-md hover:scale-[1.02] hover:shadow-lg active:scale-[0.98] transition-all w-full cursor-pointer font-bold disabled:opacity-50"
                     type="submit"
                   >
-                    Confirm Booking
+                    {bookingLoading ? "Confirming Booking..." : "Confirm Booking"}
                   </button>
                 </form>
               </div>

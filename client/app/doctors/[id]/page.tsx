@@ -2,9 +2,9 @@
 
 import Link from "next/link";
 import { useRouter } from "next/navigation";
-import { useState, use } from "react";
-import { mockDoctors, mockReviews } from "@/lib/mockData";
-import { notFound } from "next/navigation";
+import { useState, useEffect, use } from "react";
+import { mockReviews } from "@/lib/mockData";
+import { Doctor } from "@/types";
 
 interface PageProps {
   params: Promise<{ id: string }>;
@@ -14,16 +14,79 @@ export default function DoctorProfilePage({ params }: PageProps) {
   const { id } = use(params);
   const router = useRouter();
 
-  // Find Doctor
-  const doctor = mockDoctors.find((doc) => doc.id === id);
-  if (!doctor) {
-    notFound();
-  }
+  const [doctor, setDoctor] = useState<Doctor | null>(null);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
 
   // Booking Widget States
   const [consultType, setConsultType] = useState<"in-person" | "video">("in-person");
   const [selectedDate, setSelectedDate] = useState<number>(15); // Default Tue 15
   const [selectedTime, setSelectedTime] = useState<string | null>(null);
+
+  useEffect(() => {
+    const fetchDoctor = async () => {
+      try {
+        const res = await fetch(`http://localhost:5000/api/doctors/${id}`);
+        const json = await res.json();
+        if (json.success) {
+          const doc = json.data;
+          const mapped: Doctor = {
+            id: doc.id,
+            name: doc.name,
+            title: "MD, Board-Certified",
+            specialty: doc.specialty,
+            rating: doc.rating,
+            reviewsCount: Math.floor(doc.rating * 25) + 12,
+            avatar: doc.image || "https://images.unsplash.com/photo-1622253692010-333f2da6031d?auto=format&fit=crop&w=256&q=80",
+            bio: doc.bio,
+            experience: `${doc.experience}+ Years`,
+            languages: ["English", "Spanish"],
+            location: "Midtown Manhattan Suite, NY",
+            nextAvailable: "Today, 2:00 PM",
+            verified: true,
+            availableToday: true,
+            telehealth: true,
+            initialConsultationFee: doc.consultationFee,
+            boardCertifications: [
+              { title: `${doc.specialty} Specialist`, board: `American Board of ${doc.specialty}` }
+            ],
+            specialties: [doc.specialty, "Preventive Exams", "Chronic Care Management"]
+          };
+          setDoctor(mapped);
+        } else {
+          setError(json.message || "Doctor profile not found");
+        }
+      } catch (err: any) {
+        setError(err.message || "Failed to fetch doctor profile");
+      } finally {
+        setLoading(false);
+      }
+    };
+    fetchDoctor();
+  }, [id]);
+
+  if (loading) {
+    return (
+      <main className="max-w-container-max mx-auto px-margin-mobile md:px-margin-desktop py-32 flex items-center justify-center">
+        <span className="animate-spin material-symbols-outlined text-4xl text-primary">sync</span>
+      </main>
+    );
+  }
+
+  if (error || !doctor) {
+    return (
+      <main className="max-w-container-max mx-auto px-margin-mobile md:px-margin-desktop py-24 flex items-center justify-center">
+        <div className="bg-surface-container-lowest rounded-xl p-12 text-center soft-border max-w-md w-full">
+          <span className="material-symbols-outlined text-red-500 text-5xl mb-4">error</span>
+          <h3 className="font-headline-md text-headline-md text-red-500 mb-2 font-semibold">Error Loading Profile</h3>
+          <p className="text-on-surface-variant font-body-md text-body-md mb-6">{error || "Doctor not found"}</p>
+          <Link href="/doctors" className="bg-primary text-on-primary px-6 py-2.5 rounded-full text-label-md font-label-md">
+            Back to Directory
+          </Link>
+        </div>
+      </main>
+    );
+  }
 
   // Quick navigation scroll to booking
   const scrollToBooking = () => {

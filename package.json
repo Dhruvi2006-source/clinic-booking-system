@@ -1,0 +1,13 @@
+{
+  "name": "auraclinic-fullstack",
+  "version": "1.0.0",
+  "description": "Monorepo configuration for AuraClinic healthcare booking platform",
+  "private": true,
+  "scripts": {
+    "dev": "npx -y concurrently \"npm run dev --prefix client\" \"npm run dev --prefix server\"",
+    "install:all": "npm install --prefix client && npm install --prefix server",
+    "prisma:generate": "npm run prisma:generate --prefix server",
+    "prisma:migrate": "npm run prisma:migrate --prefix server",
+    "prisma:seed": "npm run prisma:seed --prefix server"
+  }
+}
