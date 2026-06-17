@@ -83,10 +83,29 @@ const getBookedSlotsForDoctor = async (doctorId, dateStr) => {
   return appointments.map(app => app.appointmentDate.toISOString());
 };
 
-const getAllAppointments = async (userEmail, userRole) => {
-  // Enforce security rule: Admin sees all; Patient sees only their own
+const getAllAppointments = async (userEmail, userRole, userId) => {
+  // Enforce security rule: Admin sees all; Patient sees only their own; Doctor sees only their own
   if (userRole === 'ADMIN') {
     return await prisma.appointment.findMany({
+      include: {
+        doctor: true
+      },
+      orderBy: {
+        appointmentDate: 'asc'
+      }
+    });
+  }
+
+  if (userRole === 'DOCTOR') {
+    const doctor = await prisma.doctor.findUnique({
+      where: { userId }
+    });
+    if (!doctor) return [];
+
+    return await prisma.appointment.findMany({
+      where: {
+        doctorId: doctor.id
+      },
       include: {
         doctor: true
       },
@@ -109,7 +128,7 @@ const getAllAppointments = async (userEmail, userRole) => {
   });
 };
 
-const getAppointmentById = async (id, userEmail, userRole) => {
+const getAppointmentById = async (id, userEmail, userRole, userId) => {
   const appointment = await prisma.appointment.findUnique({
     where: { id },
     include: {
@@ -123,8 +142,17 @@ const getAppointmentById = async (id, userEmail, userRole) => {
     throw error;
   }
 
-  // Security check: patients can only access their own appointments
-  if (userRole !== 'ADMIN' && appointment.patientEmail !== userEmail) {
+  // Security check: patients can only access their own appointments, doctors can only access their own
+  if (userRole === 'DOCTOR') {
+    const doctor = await prisma.doctor.findUnique({
+      where: { userId }
+    });
+    if (!doctor || appointment.doctorId !== doctor.id) {
+      const error = new Error('Access denied. This appointment belongs to another doctor.');
+      error.statusCode = 403;
+      throw error;
+    }
+  } else if (userRole !== 'ADMIN' && appointment.patientEmail !== userEmail) {
     const error = new Error('Access denied. This appointment belongs to another patient.');
     error.statusCode = 403;
     throw error;
@@ -133,9 +161,43 @@ const getAppointmentById = async (id, userEmail, userRole) => {
   return appointment;
 };
 
+const updateAppointmentStatus = async (id, status, userEmail, userRole, userId) => {
+  const appointment = await prisma.appointment.findUnique({
+    where: { id }
+  });
+
+  if (!appointment) {
+    const error = new Error(`Appointment with ID ${id} not found`);
+    error.statusCode = 404;
+    throw error;
+  }
+
+  if (userRole === 'DOCTOR') {
+    const doctor = await prisma.doctor.findUnique({
+      where: { userId }
+    });
+    if (!doctor || appointment.doctorId !== doctor.id) {
+      const error = new Error('Access denied. This appointment is assigned to another doctor.');
+      error.statusCode = 403;
+      throw error;
+    }
+  } else if (userRole !== 'ADMIN') {
+    const error = new Error('Access denied. Insufficient permissions.');
+    error.statusCode = 403;
+    throw error;
+  }
+
+  return await prisma.appointment.update({
+    where: { id },
+    data: { status },
+    include: { doctor: true }
+  });
+};
+
 module.exports = {
   createAppointment,
   getBookedSlotsForDoctor,
   getAllAppointments,
-  getAppointmentById
+  getAppointmentById,
+  updateAppointmentStatus
 };

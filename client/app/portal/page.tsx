@@ -2,7 +2,6 @@
 
 import Link from "next/link";
 import { useState, useEffect } from "react";
-import { mockVitals } from "@/lib/mockData";
 import AuthModal from "@/components/AuthModal";
 
 export default function PatientPortal() {
@@ -11,6 +10,12 @@ export default function PatientPortal() {
   const [error, setError] = useState<string | null>(null);
   const [patientName, setPatientName] = useState<string>("Patient");
   const [isUnauthenticated, setIsUnauthenticated] = useState(false);
+  const [vitals, setVitals] = useState<any[]>([
+    { name: "Blood Pressure", value: "--", unit: "mmHg", status: undefined, icon: "monitor_heart" },
+    { name: "Heart Rate", value: "--", unit: "bpm", status: undefined, icon: "favorite" },
+    { name: "Weight", value: "--", unit: "lbs", status: undefined, icon: "scale" }
+  ]);
+  const [medicalReport, setMedicalReport] = useState<string | null>(null);
 
   const fetchPatientData = async () => {
     try {
@@ -31,6 +36,12 @@ export default function PatientPortal() {
 
       if (meJson.success) {
         setPatientName(meJson.data.name);
+        setVitals([
+          { name: "Blood Pressure", value: meJson.data.bloodPressure || "--", unit: "mmHg", status: meJson.data.bloodPressure ? "Normal" : undefined, icon: "monitor_heart" },
+          { name: "Heart Rate", value: meJson.data.heartRate || "--", unit: "bpm", status: meJson.data.heartRate ? "Normal" : undefined, icon: "favorite" },
+          { name: "Weight", value: meJson.data.weight || "--", unit: "lbs", status: undefined, icon: "scale" }
+        ]);
+        setMedicalReport(meJson.data.medicalReport || null);
       } else {
         localStorage.removeItem("aura_patient_token");
         localStorage.removeItem("aura_patient_user");
@@ -110,14 +121,23 @@ export default function PatientPortal() {
           ) : appointment ? (
             <>
               <div>
-                <div className="flex justify-between items-start mb-6">
+                <div className="flex justify-between items-start mb-6 flex-wrap gap-3">
                   <div className="inline-flex items-center gap-2 bg-secondary-fixed text-on-secondary-fixed px-3 py-1.5 rounded-full font-label-md text-label-md font-semibold border border-outline-variant/30">
                     <span className="material-symbols-outlined text-[16px]">event</span>
                     Upcoming Appointment
                   </div>
-                  <button className="text-primary hover:bg-surface-container-low p-2 rounded-full transition-colors cursor-pointer">
-                    <span className="material-symbols-outlined">more_horiz</span>
-                  </button>
+                  <div className="flex items-center gap-3">
+                    <span className={`inline-flex px-3 py-1 rounded-full text-xs font-bold ${
+                      appointment.status === 'APPROVED' ? 'bg-emerald-100 text-emerald-800' :
+                      appointment.status === 'REJECTED' ? 'bg-red-100 text-red-800' :
+                      'bg-yellow-100 text-yellow-800'
+                    }`}>
+                      {appointment.status || 'PENDING'}
+                    </span>
+                    <button className="text-primary hover:bg-surface-container-low p-2 rounded-full transition-colors cursor-pointer">
+                      <span className="material-symbols-outlined">more_horiz</span>
+                    </button>
+                  </div>
                 </div>
                 <div className="flex items-start gap-6 flex-col sm:flex-row">
                   <div className="w-20 h-20 rounded-full overflow-hidden shrink-0 border-2 border-surface-container-low bg-surface-container-low relative shadow-sm">
@@ -188,7 +208,7 @@ export default function PatientPortal() {
             <span className="material-symbols-outlined text-secondary">monitor_heart</span>
           </div>
           <div className="space-y-6">
-            {mockVitals.map((vital, index) => (
+            {vitals.map((vital, index) => (
               <div
                 key={vital.name}
                 className="border-b border-outline-variant/20 pb-4 last:border-b-0 last:pb-0 flex items-center justify-between"
@@ -229,20 +249,16 @@ export default function PatientPortal() {
         </div>
 
         {/* Medical Records & Results */}
-        <div className="md:col-span-4 bg-surface-container-lowest/80 backdrop-blur-md rounded-xl border border-outline-variant/30 p-5 sm:p-8 shadow-level-2 hover:shadow-level-3 hover:-translate-y-1 transition-all duration-300 group cursor-pointer">
-          <div className="bg-surface-container w-12 h-12 rounded-full flex items-center justify-center mb-6 text-on-surface group-hover:bg-primary-fixed transition-colors">
+        <div className="md:col-span-4 bg-surface-container-lowest/80 backdrop-blur-md rounded-xl border border-outline-variant/30 p-5 sm:p-8 shadow-level-2 hover:shadow-level-3 hover:-translate-y-1 transition-all duration-300 group">
+          <div className="bg-surface-container w-12 h-12 rounded-full flex items-center justify-center mb-6 text-on-surface">
             <span className="material-symbols-outlined">folder_shared</span>
           </div>
           <h3 className="font-headline-md text-headline-md text-on-surface mb-2 font-bold">
-            Medical Records
+            Clinical Report
           </h3>
-          <p className="font-body-md text-body-md text-secondary mb-6 leading-relaxed">
-            View your complete medical history, lab results, and visit summaries.
+          <p className="font-body-md text-body-md text-secondary mb-6 leading-relaxed whitespace-pre-line text-sm font-semibold">
+            {medicalReport || "Your physician has not filed a clinical report yet. Details will appear here after your session."}
           </p>
-          <div className="flex items-center text-primary font-label-md text-label-md group-hover:translate-x-1 transition-transform font-bold">
-            Access Records{" "}
-            <span className="material-symbols-outlined text-[18px] ml-1">arrow_forward</span>
-          </div>
         </div>
 
         {/* Prescriptions */}

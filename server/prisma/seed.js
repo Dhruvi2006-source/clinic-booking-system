@@ -34,10 +34,14 @@ async function main() {
   });
   console.log(`Created patient: ${patient.email}`);
 
+  console.log('Hashing doctor passwords...');
+  const doctorPasswordHash = await bcrypt.hash('123456', 10);
+
   console.log('Seeding doctors...');
   const doctorsData = [
     {
       name: 'Dr. Evelyn Monroe',
+      email: 'monroe@auraclinic.com',
       specialty: 'Cardiology',
       bio: 'Board-certified cardiologist specializing in preventive cardiovascular medicine, heart failure management, and advanced non-invasive cardiac imaging.',
       experience: 12,
@@ -47,6 +51,7 @@ async function main() {
     },
     {
       name: 'Dr. Marcus Vance',
+      email: 'vance@auraclinic.com',
       specialty: 'Neurology',
       bio: 'Expert clinical neurologist focusing on neuromuscular disorders, chronic migraine therapy, sleep medicine, and comprehensive stroke prevention research.',
       experience: 15,
@@ -56,6 +61,7 @@ async function main() {
     },
     {
       name: 'Dr. Sarah Jenkins',
+      email: 'jenkins@auraclinic.com',
       specialty: 'Dermatology',
       bio: 'Dedicated dermatologist passionate about clinical skincare treatments, pediatric dermatology, early melanoma diagnosis, and state-of-the-art laser surgeries.',
       experience: 8,
@@ -66,10 +72,28 @@ async function main() {
   ];
 
   for (const doc of doctorsData) {
-    const createdDoctor = await prisma.doctor.create({
-      data: doc
+    const user = await prisma.user.create({
+      data: {
+        name: doc.name,
+        email: doc.email,
+        password: doctorPasswordHash,
+        role: 'DOCTOR'
+      }
     });
-    console.log(`Created doctor: ${createdDoctor.name} (ID: ${createdDoctor.id})`);
+
+    const createdDoctor = await prisma.doctor.create({
+      data: {
+        name: doc.name,
+        specialty: doc.specialty,
+        bio: doc.bio,
+        experience: doc.experience,
+        rating: doc.rating,
+        consultationFee: doc.consultationFee,
+        image: doc.image,
+        userId: user.id
+      }
+    });
+    console.log(`Created doctor: ${createdDoctor.name} linked to user: ${user.email} (ID: ${createdDoctor.id})`);
   }
 
   console.log('Database seeding successfully completed.');

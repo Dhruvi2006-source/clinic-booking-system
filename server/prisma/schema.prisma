@@ -8,12 +8,21 @@ datasource db {
 }
 
 model User {
-  id        String   @id @default(cuid())
-  name      String
-  email     String   @unique
-  password  String
-  role      Role     @default(PATIENT)
-  createdAt DateTime @default(now())
+  id            String   @id @default(cuid())
+  name          String
+  email         String   @unique
+  password      String
+  role          Role     @default(PATIENT)
+  createdAt     DateTime @default(now())
+
+  // Patient Vitals
+  bloodPressure String?
+  heartRate     String?
+  weight        String?
+  medicalReport String?
+
+  // Doctor relation
+  doctor        Doctor?
 }
 
 model Doctor {
@@ -27,6 +36,14 @@ model Doctor {
   consultationFee Float
   createdAt       DateTime      @default(now())
   appointments    Appointment[]
+
+  // Relation to User
+  userId          String?       @unique
+  user            User?         @relation(fields: [userId], references: [id], onDelete: SetNull)
+
+  // Availability Settings
+  onDuty          Boolean       @default(true)
+  activeSlots     String[]      @default(["09:00 AM", "09:30 AM", "10:00 AM", "11:00 AM", "01:30 PM", "02:00 PM", "03:45 PM", "04:15 PM"])
 }
 
 model Appointment {
@@ -37,6 +54,7 @@ model Appointment {
   consultationType ConsultationType
   appointmentDate  DateTime
   doctorId         String
+  status           String           @default("PENDING") // PENDING, APPROVED, REJECTED
   createdAt        DateTime         @default(now())
   doctor           Doctor           @relation(fields: [doctorId], references: [id])
 }
@@ -49,4 +67,5 @@ enum ConsultationType {
 enum Role {
   PATIENT
   ADMIN
+  DOCTOR
 }

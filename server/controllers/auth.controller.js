@@ -1,4 +1,5 @@
 const authService = require('../services/auth.service');
+const prisma = require('../config/db');
 
 const register = async (req, res, next) => {
   try {
@@ -30,13 +31,24 @@ const login = async (req, res, next) => {
 
 const getMe = async (req, res, next) => {
   try {
+    const user = await prisma.user.findUnique({
+      where: { id: req.user.id },
+      include: {
+        doctor: true
+      }
+    });
     return res.status(200).json({
       success: true,
       data: {
-        id: req.user.id,
-        name: req.user.name,
-        email: req.user.email,
-        role: req.user.role
+        id: user.id,
+        name: user.name,
+        email: user.email,
+        role: user.role,
+        bloodPressure: user.bloodPressure,
+        heartRate: user.heartRate,
+        weight: user.weight,
+        medicalReport: user.medicalReport,
+        doctor: user.doctor
       }
     });
   } catch (error) {

@@ -9,7 +9,10 @@ const getAllDoctors = async () => {
       experience: true,
       rating: true,
       consultationFee: true,
-      image: true
+      image: true,
+      bio: true,
+      onDuty: true,
+      activeSlots: true
     }
   });
 };
@@ -28,7 +31,29 @@ const getDoctorById = async (id) => {
   return doctor;
 };
 
+const updateDoctorAvailability = async (id, onDuty, activeSlots) => {
+  const doctor = await prisma.doctor.findUnique({
+    where: { id }
+  });
+
+  if (!doctor) {
+    const error = new Error(`Doctor with ID ${id} not found`);
+    error.statusCode = 404;
+    throw error;
+  }
+
+  const updateData = {};
+  if (onDuty !== undefined) updateData.onDuty = onDuty;
+  if (activeSlots !== undefined) updateData.activeSlots = activeSlots;
+
+  return await prisma.doctor.update({
+    where: { id },
+    data: updateData
+  });
+};
+
 module.exports = {
   getAllDoctors,
-  getDoctorById
+  getDoctorById,
+  updateDoctorAvailability
 };

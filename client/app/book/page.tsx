@@ -130,7 +130,9 @@ function BookContent() {
             boardCertifications: [
               { title: `${doc.specialty} Specialist`, board: `American Board of ${doc.specialty}` }
             ],
-            specialties: [doc.specialty, "Preventive Exams", "Chronic Care Management"]
+            specialties: [doc.specialty, "Preventive Exams", "Chronic Care Management"],
+            onDuty: doc.onDuty,
+            activeSlots: doc.activeSlots
           }));
           setDoctors(mapped);
         } else {
@@ -687,7 +689,17 @@ function BookContent() {
                 </div>
               ) : (
                 (() => {
-                  const candidateSlots = ["09:00 AM", "09:30 AM", "10:00 AM", "11:00 AM", "01:30 PM", "02:00 PM", "03:45 PM", "04:15 PM"];
+                  const candidateSlots = selectedDoctor?.activeSlots || ["09:00 AM", "09:30 AM", "10:00 AM", "11:00 AM", "01:30 PM", "02:00 PM", "03:45 PM", "04:15 PM"];
+                  
+                  if (selectedDoctor && selectedDoctor.onDuty === false) {
+                    return (
+                      <div className="text-center py-8 text-on-surface-variant font-medium">
+                        <span className="material-symbols-outlined text-4xl text-outline mb-2">event_busy</span>
+                        <p className="text-sm">This doctor is currently off duty. Please check back later or select another physician.</p>
+                      </div>
+                    );
+                  }
+
                   const availableSlots = candidateSlots.filter((time) => {
                     const slotDate = new Date(`${selectedDate} ${time}`);
                     

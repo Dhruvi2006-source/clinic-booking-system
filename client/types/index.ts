@@ -17,6 +17,8 @@ export interface Doctor {
   initialConsultationFee: number;
   boardCertifications: { title: string; board: string }[];
   specialties: string[];
+  onDuty?: boolean;
+  activeSlots?: string[];
 }
 
 export interface Review {

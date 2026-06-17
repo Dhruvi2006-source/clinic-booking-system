@@ -1,7 +1,7 @@
 const express = require('express');
 const router = express.Router();
 const appointmentController = require('../controllers/appointment.controller');
-const { authenticate } = require('../middleware/auth.middleware');
+const { authenticate, authorize } = require('../middleware/auth.middleware');
 const validate = require('../middleware/validation.middleware');
 const { appointmentSchema } = require('../validators/appointment.validation');
 
@@ -9,5 +9,6 @@ router.post('/', authenticate, validate(appointmentSchema), appointmentControlle
 router.get('/', authenticate, appointmentController.getAppointments);
 router.get('/booked-slots/doctor/:doctorId', appointmentController.getBookedSlots);
 router.get('/:id', authenticate, appointmentController.getAppointmentDetail);
+router.put('/:id/status', authenticate, authorize('DOCTOR', 'ADMIN'), appointmentController.updateAppointmentStatus);
 
 module.exports = router;

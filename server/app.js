@@ -8,6 +8,7 @@ const authRoutes = require('./routes/auth.routes');
 const doctorRoutes = require('./routes/doctor.routes');
 const appointmentRoutes = require('./routes/appointment.routes');
 const adminRoutes = require('./routes/admin.routes');
+const patientRoutes = require('./routes/patient.routes');
 
 // Load environment variables
 dotenv.config();
@@ -27,6 +28,7 @@ app.use('/api/auth', authRoutes);
 app.use('/api/doctors', doctorRoutes);
 app.use('/api/appointments', appointmentRoutes);
 app.use('/api/admin', adminRoutes);
+app.use('/api/patients', patientRoutes);
 
 // Simple Health Check Endpoint
 app.get('/health', (req, res) => {
