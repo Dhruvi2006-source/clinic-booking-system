@@ -148,7 +148,7 @@ export default function InClinicExperience() {
       </section>
 
       {/* On-site diagnostics */}
-      <section className="py-24 px-margin-mobile md:px-margin-desktop bg-[#0B1F3A] text-white rounded-[40px] my-8 mx-4 shadow-level-3">
+      <section className="py-24 px-margin-mobile md:px-margin-desktop bg-primary text-white rounded-[40px] my-8 mx-4 shadow-level-3">
         <div className="max-w-container-max mx-auto grid md:grid-cols-2 gap-12 items-center">
           <div className="space-y-6">
             <div className="text-tertiary font-label-md text-label-md uppercase tracking-widest font-bold">

@@ -68,7 +68,7 @@ export default function AuthModal({ onSuccess, onClose, canClose = true }: AuthM
       />
 
       {/* Modal Dialog */}
-      <div className="relative w-full max-w-md bg-[#0B1F3A]/95 text-white rounded-3xl border border-slate-800 shadow-2xl p-8 z-10 animate-pop-in">
+      <div className="relative w-full max-w-md bg-primary/95 text-white rounded-3xl border border-slate-800 shadow-2xl p-8 z-10 animate-pop-in">
         {/* Close button (conditional) */}
         {canClose && onClose && (
           <button 
