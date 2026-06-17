@@ -18,11 +18,6 @@ export default function DoctorProfilePage({ params }: PageProps) {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
 
-  // Booking Widget States
-  const [consultType, setConsultType] = useState<"in-person" | "video">("in-person");
-  const [selectedDate, setSelectedDate] = useState<number>(15); // Default Tue 15
-  const [selectedTime, setSelectedTime] = useState<string | null>(null);
-
   useEffect(() => {
     const fetchDoctor = async () => {
       try {
@@ -87,26 +82,6 @@ export default function DoctorProfilePage({ params }: PageProps) {
       </main>
     );
   }
-
-  // Quick navigation scroll to booking
-  const scrollToBooking = () => {
-    const el = document.getElementById("booking-widget");
-    if (el) {
-      el.scrollIntoView({ behavior: "smooth" });
-    }
-  };
-
-  const handleConfirmBooking = () => {
-    if (!selectedTime) return;
-    
-    const params = new URLSearchParams();
-    params.append("doctor", doctor.id);
-    params.append("type", consultType);
-    params.append("date", `Oct ${selectedDate}, 2024`);
-    params.append("time", selectedTime);
-    
-    router.push(`/book?${params.toString()}`);
-  };
 
   return (
     <main className="max-w-container-max mx-auto px-margin-mobile md:px-margin-desktop py-section-gap flex flex-col gap-section-gap relative">
@@ -190,7 +165,7 @@ export default function DoctorProfilePage({ params }: PageProps) {
 
           <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-4 w-full sm:w-auto">
             <button
-              onClick={scrollToBooking}
+              onClick={() => router.push(`/book?doctor=${doctor.id}`)}
               className="bg-primary text-on-primary text-label-md font-label-md px-8 py-4 rounded-full hover:scale-[1.02] hover:shadow-lg active:scale-[0.98] transition-all flex items-center justify-center gap-2 cursor-pointer font-semibold w-full sm:w-auto"
             >
               <span>Book Appointment</span>
@@ -207,7 +182,7 @@ export default function DoctorProfilePage({ params }: PageProps) {
       {/* Two Column Layout: Details & Booking */}
       <section className="grid grid-cols-1 lg:grid-cols-12 gap-gutter items-start relative z-10">
         {/* Left Column: Deep Dive */}
-        <div className="lg:col-span-7 flex flex-col gap-section-gap">
+        <div className="lg:col-span-12 flex flex-col gap-section-gap">
           {/* Biography */}
           <div className="bg-surface-container-lowest border border-outline-variant/30 rounded-xl p-8 md:p-10 shadow-level-2">
             <h2 className="text-headline-lg font-headline-lg text-on-surface mb-6 flex items-center gap-3 font-bold">
@@ -331,200 +306,6 @@ export default function DoctorProfilePage({ params }: PageProps) {
           </div>
         </div>
 
-        {/* Right Column: Interactive Booking Calendar (Sticky Glass Widget) */}
-        <div id="booking-widget" className="lg:col-span-5 relative">
-          <div className="sticky top-[100px] bg-surface-container-lowest/80 backdrop-blur-md rounded-xl p-8 shadow-level-3 border border-outline-variant/40">
-            <div className="mb-6">
-              <h3 className="text-headline-md font-headline-md text-on-surface mb-2 font-bold">
-                Book an Appointment
-              </h3>
-              <p className="text-body-md font-body-md text-on-surface-variant">
-                Select an available date and time.
-              </p>
-            </div>
-
-            {/* Consultation Type Selector */}
-            <div className="mb-6 bg-surface-container-low rounded-lg p-1 flex border border-outline-variant/30">
-              <button
-                onClick={() => setConsultType("in-person")}
-                className={`flex-1 py-2 rounded-md text-label-md font-label-md transition-all cursor-pointer font-semibold ${
-                  consultType === "in-person"
-                    ? "bg-surface-container-lowest text-on-surface shadow-sm border border-outline-variant/20"
-                    : "text-on-surface-variant border-transparent hover:bg-surface-container/50"
-                }`}
-              >
-                In-Person
-              </button>
-              <button
-                onClick={() => setConsultType("video")}
-                className={`flex-1 py-2 rounded-md text-label-md font-label-md transition-all cursor-pointer font-semibold ${
-                  consultType === "video"
-                    ? "bg-surface-container-lowest text-on-surface shadow-sm border border-outline-variant/20"
-                    : "text-on-surface-variant border-transparent hover:bg-surface-container/50"
-                }`}
-              >
-                Video Consult
-              </button>
-            </div>
-
-            {/* Month Navigation */}
-            <div className="flex justify-between items-center mb-6">
-              <span className="text-body-lg font-body-lg font-bold text-on-surface">
-                October 2024
-              </span>
-              <div className="flex gap-2">
-                <button className="w-8 h-8 rounded-full flex items-center justify-center border border-outline-variant hover:bg-surface-container transition-colors text-on-surface cursor-pointer">
-                  <span className="material-symbols-outlined text-[20px]">chevron_left</span>
-                </button>
-                <button className="w-8 h-8 rounded-full flex items-center justify-center border border-outline-variant hover:bg-surface-container transition-colors text-on-surface bg-surface-container-lowest cursor-pointer">
-                  <span className="material-symbols-outlined text-[20px]">chevron_right</span>
-                </button>
-              </div>
-            </div>
-
-            {/* Date Ribbon (Scrollable) */}
-            <div className="flex gap-3 overflow-x-auto custom-scrollbar pb-4 mb-6">
-              {/* Date Item (Mon 14 - Past/Unavailable) */}
-              <div className="min-w-[64px] py-3 flex flex-col items-center rounded-lg bg-surface-container-highest/20 opacity-40 cursor-not-allowed select-none">
-                <span className="text-caption font-caption text-on-surface-variant uppercase mb-1 font-semibold">
-                  Mon
-                </span>
-                <span className="text-headline-md font-headline-md text-on-surface-variant font-bold">14</span>
-              </div>
-              {/* Date Item (Tue 15 - Active) */}
-              <div
-                onClick={() => setSelectedDate(15)}
-                className={`min-w-[64px] py-3 flex flex-col items-center rounded-lg cursor-pointer transition-transform hover:scale-105 border ${
-                  selectedDate === 15
-                    ? "bg-primary border-primary text-on-primary shadow-level-2"
-                    : "bg-surface-container-lowest border-outline-variant/40 hover:border-primary"
-                }`}
-              >
-                <span
-                  className={`text-caption font-caption uppercase mb-1 font-semibold ${
-                    selectedDate === 15 ? "text-on-primary/80" : "text-on-surface-variant"
-                  }`}
-                >
-                  Tue
-                </span>
-                <span className="text-headline-md font-headline-md font-bold">15</span>
-              </div>
-              {/* Date Item (Wed 16) */}
-              <div
-                onClick={() => setSelectedDate(16)}
-                className={`min-w-[64px] py-3 flex flex-col items-center rounded-lg cursor-pointer transition-transform hover:scale-105 border ${
-                  selectedDate === 16
-                    ? "bg-primary border-primary text-on-primary shadow-level-2"
-                    : "bg-surface-container-lowest border-outline-variant/40 hover:border-primary"
-                }`}
-              >
-                <span
-                  className={`text-caption font-caption uppercase mb-1 font-semibold ${
-                    selectedDate === 16 ? "text-on-primary/80" : "text-on-surface-variant"
-                  }`}
-                >
-                  Wed
-                </span>
-                <span className="text-headline-md font-headline-md font-bold">16</span>
-              </div>
-              {/* Date Item (Thu 17) */}
-              <div
-                onClick={() => setSelectedDate(17)}
-                className={`min-w-[64px] py-3 flex flex-col items-center rounded-lg cursor-pointer transition-transform hover:scale-105 border ${
-                  selectedDate === 17
-                    ? "bg-primary border-primary text-on-primary shadow-level-2"
-                    : "bg-surface-container-lowest border-outline-variant/40 hover:border-primary"
-                }`}
-              >
-                <span
-                  className={`text-caption font-caption uppercase mb-1 font-semibold ${
-                    selectedDate === 17 ? "text-on-primary/80" : "text-on-surface-variant"
-                  }`}
-                >
-                  Thu
-                </span>
-                <span className="text-headline-md font-headline-md font-bold">17</span>
-              </div>
-              {/* Date Item (Fri 18) */}
-              <div
-                onClick={() => setSelectedDate(18)}
-                className={`min-w-[64px] py-3 flex flex-col items-center rounded-lg cursor-pointer transition-transform hover:scale-105 border ${
-                  selectedDate === 18
-                    ? "bg-primary border-primary text-on-primary shadow-level-2"
-                    : "bg-surface-container-lowest border-outline-variant/40 hover:border-primary"
-                }`}
-              >
-                <span
-                  className={`text-caption font-caption uppercase mb-1 font-semibold ${
-                    selectedDate === 18 ? "text-on-primary/80" : "text-on-surface-variant"
-                  }`}
-                >
-                  Fri
-                </span>
-                <span className="text-headline-md font-headline-md font-bold">18</span>
-              </div>
-            </div>
-
-            {/* Time Slots */}
-            <div className="mb-8">
-              <p className="text-label-md font-label-md text-on-surface-variant mb-4 flex items-center gap-2 font-bold text-[13px]">
-                <span className="material-symbols-outlined text-[16px]">schedule</span>
-                Available Slots for {selectedDate === 15 ? "Tue, Oct 15" : selectedDate === 16 ? "Wed, Oct 16" : selectedDate === 17 ? "Thu, Oct 17" : "Fri, Oct 18"}
-              </p>
-              <div className="grid grid-cols-3 gap-3">
-                {["09:00 AM", "09:30 AM", "10:15 AM", "11:00 AM"].map((time) => (
-                  <button
-                    key={time}
-                    onClick={() => setSelectedTime(time)}
-                    className={`py-2.5 rounded border text-body-md font-body-md transition-all cursor-pointer font-semibold ${
-                      selectedTime === time
-                        ? "border-primary bg-primary-fixed text-primary font-bold ring-1 ring-primary shadow-sm"
-                        : "border-outline-variant/50 bg-surface-container-low text-on-surface hover:border-primary hover:text-primary"
-                    }`}
-                  >
-                    {time}
-                  </button>
-                ))}
-                {/* Disabled busy slot */}
-                <button
-                  disabled
-                  className="py-2.5 rounded border border-outline-variant/30 bg-surface-container/30 text-outline/40 cursor-not-allowed line-through decoration-outline/30 select-none font-semibold"
-                >
-                  01:00 PM
-                </button>
-                <button
-                  onClick={() => setSelectedTime("02:30 PM")}
-                  className={`py-2.5 rounded border text-body-md font-body-md transition-all cursor-pointer font-semibold ${
-                    selectedTime === "02:30 PM"
-                      ? "border-primary bg-primary-fixed text-primary font-bold ring-1 ring-primary shadow-sm"
-                      : "border-outline-variant/50 bg-surface-container-low text-on-surface hover:border-primary hover:text-primary"
-                  }`}
-                >
-                  02:30 PM
-                </button>
-              </div>
-            </div>
-
-            {/* Action Summary */}
-            <div className="pt-6 border-t border-outline-variant/30 flex flex-col gap-4">
-              <div className="flex justify-between items-center text-body-md font-body-md text-on-surface">
-                <span className="font-medium">Initial Consultation</span>
-                <span className="font-bold text-headline-md">${doctor.initialConsultationFee}</span>
-              </div>
-              <button
-                disabled={!selectedTime}
-                onClick={handleConfirmBooking}
-                className="w-full bg-primary text-on-primary text-label-md font-label-md py-4 rounded-full hover:scale-[1.02] hover:shadow-lg active:scale-[0.98] transition-all disabled:opacity-50 disabled:cursor-not-allowed cursor-pointer font-bold text-center"
-              >
-                Confirm Appointment
-              </button>
-              <p className="text-caption font-caption text-center text-on-surface-variant flex items-center justify-center gap-1 font-semibold">
-                <span className="material-symbols-outlined text-[14px]">lock</span>
-                Secure booking via AuraClinic portal.
-              </p>
-            </div>
-          </div>
-        </div>
       </section>
     </main>
   );

@@ -35,25 +35,18 @@ function BookContent() {
   const [bookingError, setBookingError] = useState<string | null>(null);
 
   // Dynamic Dates and Slots states
-  const [availableDates, setAvailableDates] = useState<Date[]>([]);
+  const [navDate, setNavDate] = useState<Date>(new Date());
   const [bookedSlots, setBookedSlots] = useState<string[]>([]);
   const [loadingSlots, setLoadingSlots] = useState(false);
 
   // Auth States
   const [isLoggedIn, setIsLoggedIn] = useState(false);
 
-  // Generate 14 days starting from today dynamically
+  // Set selectedDate to today's date formatted correctly on mount
   useEffect(() => {
-    const dates = [];
-    for (let i = 0; i < 14; i++) {
-      const d = new Date();
-      d.setDate(d.getDate() + i);
-      dates.push(d);
-    }
-    setAvailableDates(dates);
-    if (dates.length > 0) {
-      setSelectedDate(dates[0].toLocaleDateString([], { month: 'short', day: 'numeric', year: 'numeric' }));
-    }
+    const today = new Date();
+    setSelectedDate(today.toLocaleDateString([], { month: 'short', day: 'numeric', year: 'numeric' }));
+    setNavDate(today);
   }, []);
 
   // Check user authentication status and prefill details
@@ -168,7 +161,7 @@ function BookContent() {
       const doc = doctors.find((d) => d.id === docId);
       if (doc) {
         setSelectedDoctor(doc);
-        setStep(2); // Skip Step 1 if doctor is prefilled
+        setStep(1); // Stay on Step 1 to allow smooth progression and review
       }
     }
     if (type) {
@@ -187,7 +180,6 @@ function BookContent() {
 
   const handleSelectDoctor = (doctor: Doctor) => {
     setSelectedDoctor(doctor);
-    setStep(2);
   };
 
   const handleSelectType = (type: "Virtual" | "In-Clinic") => {
@@ -197,11 +189,52 @@ function BookContent() {
 
   const handleSelectDate = (date: string) => {
     setSelectedDate(date);
+    setSelectedTime(null);
   };
 
   const handleSelectTime = (time: string) => {
     setSelectedTime(time);
     setStep(5);
+  };
+
+  // Get all days for the currently navigated month
+  const getDaysForGrid = () => {
+    const year = navDate.getFullYear();
+    const month = navDate.getMonth();
+    const firstDay = new Date(year, month, 1);
+    const lastDay = new Date(year, month + 1, 0);
+    const daysInMonth = lastDay.getDate();
+    const startOffset = firstDay.getDay();
+
+    const cells = [];
+    for (let i = 0; i < startOffset; i++) {
+      cells.push({ isPadding: true, key: `pad-${i}` });
+    }
+    for (let dayNum = 1; dayNum <= daysInMonth; dayNum++) {
+      const cellDate = new Date(year, month, dayNum);
+      cells.push({
+        isPadding: false,
+        dayNum,
+        date: cellDate,
+        key: `day-${dayNum}`
+      });
+    }
+    return cells;
+  };
+
+  const handlePrevMonth = () => {
+    const prev = new Date(navDate.getFullYear(), navDate.getMonth() - 1, 1);
+    const today = new Date();
+    if (prev.getFullYear() < today.getFullYear() || 
+        (prev.getFullYear() === today.getFullYear() && prev.getMonth() < today.getMonth())) {
+      return;
+    }
+    setNavDate(prev);
+  };
+
+  const handleNextMonth = () => {
+    const next = new Date(navDate.getFullYear(), navDate.getMonth() + 1, 1);
+    setNavDate(next);
   };
 
   const handleFormSubmit = async (e: React.FormEvent) => {
@@ -396,6 +429,18 @@ function BookContent() {
                 ))}
               </div>
             )}
+
+            {selectedDoctor && (
+              <div className="mt-8 flex justify-end">
+                <button
+                  onClick={() => setStep(2)}
+                  className="bg-primary text-on-primary hover:bg-primary-container px-8 py-4 rounded-full font-label-md text-label-md hover:scale-[1.02] hover:shadow-md transition-all cursor-pointer font-bold flex items-center gap-2"
+                >
+                  <span>Continue with {selectedDoctor.name}</span>
+                  <span className="material-symbols-outlined text-[16px]">arrow_forward</span>
+                </button>
+              </div>
+            )}
           </div>
         )}
 
@@ -501,59 +546,120 @@ function BookContent() {
         )}
 
         {/* STEP 3: Select Date */}
-        {step === 3 && (
-          <div className="animate-pop-in space-y-6">
-            <div
-              className="flex items-center gap-2 cursor-pointer text-on-surface-variant hover:text-primary transition-colors w-fit font-bold text-sm"
-              onClick={() => setStep(2)}
-            >
-              <span className="material-symbols-outlined text-sm">arrow_back</span>
-              <span>Back to Type</span>
-            </div>
+        {step === 3 && (() => {
+          const monthName = navDate.toLocaleDateString([], { month: 'long', year: 'numeric' });
+          const today = new Date();
+          const isPrevMonthDisabled = navDate.getFullYear() < today.getFullYear() || 
+            (navDate.getFullYear() === today.getFullYear() && navDate.getMonth() <= today.getMonth());
 
-            <h2 className="text-headline-md font-headline-md text-primary font-bold">
-              Select Appointment Date
-            </h2>
+          return (
+            <div className="animate-pop-in space-y-6">
+              <div
+                className="flex items-center gap-2 cursor-pointer text-on-surface-variant hover:text-primary transition-colors w-fit font-bold text-sm"
+                onClick={() => setStep(2)}
+              >
+                <span className="material-symbols-outlined text-sm">arrow_back</span>
+                <span>Back to Type</span>
+              </div>
 
-            <div className="bg-surface-container-lowest border border-outline-variant/60 rounded-3xl p-6 sm:p-8 max-w-2xl mx-auto shadow-sm">
-              <div className="grid grid-cols-2 sm:grid-cols-4 gap-4">
-                {availableDates.map((d) => {
-                  const dateStr = d.toLocaleDateString([], { month: 'short', day: 'numeric', year: 'numeric' });
-                  const dayName = d.toLocaleDateString([], { weekday: 'short' });
-                  const dayNum = d.toLocaleDateString([], { day: 'numeric' });
-                  const monthName = d.toLocaleDateString([], { month: 'short' });
-                  const isSelected = selectedDate === dateStr;
+              <h2 className="text-headline-md font-headline-md text-primary font-bold">
+                Select Appointment Date
+              </h2>
 
-                  return (
-                    <button
-                      key={dateStr}
-                      type="button"
-                      onClick={() => handleSelectDate(dateStr)}
-                      className={`p-4 rounded-2xl border text-center transition-all cursor-pointer ${
-                        isSelected
-                          ? "border-primary bg-primary/10 text-primary font-bold shadow-sm"
-                          : "border-outline-variant text-on-surface-variant hover:border-primary/50 hover:text-primary bg-surface-container-lowest"
-                      }`}
-                    >
-                      <div className="text-xs uppercase tracking-wider font-semibold opacity-75">{dayName}</div>
-                      <div className="text-3xl font-bold my-1">{dayNum}</div>
-                      <div className="text-xs font-semibold">{monthName}</div>
-                    </button>
-                  );
-                })}
+              <div className="bg-surface-container-lowest border border-outline-variant/60 rounded-3xl p-6 sm:p-8 max-w-xl mx-auto shadow-sm">
+                {/* Month Navigator Header */}
+                <div className="flex justify-between items-center mb-6">
+                  <button
+                    type="button"
+                    onClick={handlePrevMonth}
+                    disabled={isPrevMonthDisabled}
+                    className={`p-2 rounded-full border border-outline-variant flex items-center justify-center transition-all ${
+                      isPrevMonthDisabled
+                        ? "opacity-30 cursor-not-allowed text-on-surface-variant"
+                        : "hover:border-primary hover:text-primary cursor-pointer hover:bg-surface-container"
+                    }`}
+                  >
+                    <span className="material-symbols-outlined">chevron_left</span>
+                  </button>
+                  <h3 className="text-body-lg font-bold text-primary text-lg">
+                    {monthName}
+                  </h3>
+                  <button
+                    type="button"
+                    onClick={handleNextMonth}
+                    className="p-2 rounded-full border border-outline-variant hover:border-primary hover:text-primary flex items-center justify-center cursor-pointer hover:bg-surface-container transition-all"
+                  >
+                    <span className="material-symbols-outlined">chevron_right</span>
+                  </button>
+                </div>
+
+                {/* Weekday Labels */}
+                <div className="grid grid-cols-7 gap-2 mb-2 text-center">
+                  {["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"].map((day) => (
+                    <div key={day} className="text-xs uppercase tracking-wider font-bold text-on-surface-variant/80 py-1">
+                      {day}
+                    </div>
+                  ))}
+                </div>
+
+                {/* Days Grid */}
+                <div className="grid grid-cols-7 gap-2">
+                  {getDaysForGrid().map((cell) => {
+                    if (cell.isPadding) {
+                      return <div key={cell.key} />;
+                    }
+
+                    const cellDate = cell.date!;
+                    const dayNum = cell.dayNum!;
+                    
+                    const compareToday = new Date(today.getFullYear(), today.getMonth(), today.getDate());
+                    const compareCell = new Date(cellDate.getFullYear(), cellDate.getMonth(), cellDate.getDate());
+                    const isPast = compareCell < compareToday;
+
+                    const dateStr = cellDate.toLocaleDateString([], { month: 'short', day: 'numeric', year: 'numeric' });
+                    const isSelected = selectedDate === dateStr;
+
+                    return (
+                      <button
+                        key={cell.key}
+                        type="button"
+                        disabled={isPast}
+                        onClick={() => handleSelectDate(dateStr)}
+                        className={`aspect-square flex flex-col items-center justify-center rounded-2xl border text-sm font-semibold transition-all relative ${
+                          isPast
+                            ? "border-transparent text-on-surface-variant/30 bg-transparent cursor-not-allowed opacity-35"
+                            : isSelected
+                            ? "border-primary bg-primary text-on-primary font-bold shadow-md scale-105"
+                            : "border-outline-variant/40 text-on-surface hover:border-primary/50 hover:bg-primary/5 hover:text-primary cursor-pointer bg-surface-container-lowest"
+                        }`}
+                      >
+                        <span>{dayNum}</span>
+                        {!isPast && compareCell.getTime() === compareToday.getTime() && (
+                          <span className={`w-1.5 h-1.5 rounded-full absolute bottom-1.5 ${isSelected ? "bg-on-primary" : "bg-primary"}`} />
+                        )}
+                      </button>
+                    );
+                  })}
+                </div>
+              </div>
+
+              {selectedDate && (
+                <p className="text-center text-sm font-bold text-secondary">
+                  Selected: {selectedDate}
+                </p>
+              )}
+
+              <div className="mt-8 flex justify-end">
+                <button
+                  onClick={() => setStep(4)}
+                  className="bg-primary text-on-primary px-8 py-4 rounded-full font-label-md text-label-md hover:scale-[1.02] hover:shadow-md transition-all cursor-pointer font-bold"
+                >
+                  Choose Time Slot
+                </button>
               </div>
             </div>
-
-            <div className="mt-8 flex justify-end">
-              <button
-                onClick={() => setStep(4)}
-                className="bg-primary text-on-primary px-8 py-4 rounded-full font-label-md text-label-md hover:scale-[1.02] hover:shadow-md transition-all cursor-pointer font-bold"
-              >
-                Choose Time Slot
-              </button>
-            </div>
-          </div>
-        )}
+          );
+        })()}
 
         {/* STEP 4: Choose Time Slot */}
         {step === 4 && (
