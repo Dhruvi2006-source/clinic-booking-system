@@ -4,6 +4,7 @@ import Link from "next/link";
 import { useRouter, useSearchParams } from "next/navigation";
 import { useState, useEffect, Suspense } from "react";
 import { Doctor } from "@/types";
+import AuthModal from "@/components/AuthModal";
 
 function BookContent() {
   const router = useRouter();
@@ -13,7 +14,7 @@ function BookContent() {
   const [step, setStep] = useState<number>(1);
   const [selectedDoctor, setSelectedDoctor] = useState<Doctor | null>(null);
   const [consultationType, setConsultationType] = useState<"Virtual" | "In-Clinic" | null>(null);
-  const [selectedDate, setSelectedDate] = useState<string>("Oct 15, 2024");
+  const [selectedDate, setSelectedDate] = useState<string>("");
   const [selectedTime, setSelectedTime] = useState<string | null>(null);
   
   // Patient details form states
@@ -32,6 +33,82 @@ function BookContent() {
   
   const [bookingLoading, setBookingLoading] = useState(false);
   const [bookingError, setBookingError] = useState<string | null>(null);
+
+  // Dynamic Dates and Slots states
+  const [availableDates, setAvailableDates] = useState<Date[]>([]);
+  const [bookedSlots, setBookedSlots] = useState<string[]>([]);
+  const [loadingSlots, setLoadingSlots] = useState(false);
+
+  // Auth States
+  const [isLoggedIn, setIsLoggedIn] = useState(false);
+
+  // Generate 14 days starting from today dynamically
+  useEffect(() => {
+    const dates = [];
+    for (let i = 0; i < 14; i++) {
+      const d = new Date();
+      d.setDate(d.getDate() + i);
+      dates.push(d);
+    }
+    setAvailableDates(dates);
+    if (dates.length > 0) {
+      setSelectedDate(dates[0].toLocaleDateString([], { month: 'short', day: 'numeric', year: 'numeric' }));
+    }
+  }, []);
+
+  // Check user authentication status and prefill details
+  useEffect(() => {
+    const checkAuthAndProfile = async () => {
+      const token = localStorage.getItem("aura_patient_token");
+      setIsLoggedIn(!!token);
+      if (token) {
+        try {
+          const res = await fetch("http://localhost:5000/api/auth/me", {
+            headers: { Authorization: `Bearer ${token}` }
+          });
+          const json = await res.json();
+          if (json.success) {
+            const fullName = json.data.name || "";
+            const parts = fullName.split(" ");
+            setFirstName(parts[0] || "");
+            setLastName(parts.slice(1).join(" ") || "");
+            setEmail(json.data.email || "");
+          }
+        } catch (err) {
+          console.error("Failed to fetch profile in book page", err);
+        }
+      } else {
+        setFirstName("");
+        setLastName("");
+        setEmail("");
+      }
+    };
+    checkAuthAndProfile();
+    window.addEventListener("aura_auth_change", checkAuthAndProfile);
+    return () => window.removeEventListener("aura_auth_change", checkAuthAndProfile);
+  }, []);
+
+  // Fetch booked slots for the selected doctor and date
+  useEffect(() => {
+    const fetchBookedSlots = async () => {
+      if (!selectedDoctor || !selectedDate) return;
+      setLoadingSlots(true);
+      try {
+        const res = await fetch(`http://localhost:5000/api/appointments/booked-slots/doctor/${selectedDoctor.id}?date=${encodeURIComponent(selectedDate)}`);
+        const json = await res.json();
+        if (json.success) {
+          setBookedSlots(json.data);
+        }
+      } catch (err) {
+        console.error("Failed to fetch booked slots", err);
+      } finally {
+        setLoadingSlots(false);
+      }
+    };
+    if (step === 4 && selectedDoctor) {
+      fetchBookedSlots();
+    }
+  }, [selectedDoctor, selectedDate, step]);
 
   // Fetch doctors on mount
   useEffect(() => {
@@ -69,8 +146,11 @@ function BookContent() {
       } catch (err: any) {
         setError(err.message || "Failed to fetch doctors");
       } finally {
-        setLoading(false);
+        setLoadingLoadingState();
       }
+    };
+    const setLoadingLoadingState = () => {
+      setLoading(false);
     };
     fetchDoctors();
   }, []);
@@ -147,10 +227,12 @@ function BookContent() {
         appointmentDate
       };
 
+      const token = localStorage.getItem("aura_patient_token");
       const res = await fetch("http://localhost:5000/api/appointments", {
         method: "POST",
         headers: {
-          "Content-Type": "application/json"
+          "Content-Type": "application/json",
+          "Authorization": `Bearer ${token}`
         },
         body: JSON.stringify(payload)
       });
@@ -433,63 +515,32 @@ function BookContent() {
               Select Appointment Date
             </h2>
 
-            <div className="bg-surface-container-lowest border border-outline-variant/60 rounded-3xl p-4 sm:p-8 max-w-md mx-auto shadow-sm">
-              <div className="flex justify-between items-center mb-6">
-                <h3 className="font-headline-md text-primary font-bold">
-                  October 2024
-                </h3>
-                <div className="flex gap-2">
-                  <button className="w-8 h-8 flex items-center justify-center rounded-full hover:bg-surface-container transition-colors cursor-pointer border border-outline-variant">
-                    <span className="material-symbols-outlined">chevron_left</span>
-                  </button>
-                  <button className="w-8 h-8 flex items-center justify-center rounded-full hover:bg-surface-container transition-colors cursor-pointer border border-outline-variant">
-                    <span className="material-symbols-outlined">chevron_right</span>
-                  </button>
-                </div>
-              </div>
+            <div className="bg-surface-container-lowest border border-outline-variant/60 rounded-3xl p-6 sm:p-8 max-w-2xl mx-auto shadow-sm">
+              <div className="grid grid-cols-2 sm:grid-cols-4 gap-4">
+                {availableDates.map((d) => {
+                  const dateStr = d.toLocaleDateString([], { month: 'short', day: 'numeric', year: 'numeric' });
+                  const dayName = d.toLocaleDateString([], { weekday: 'short' });
+                  const dayNum = d.toLocaleDateString([], { day: 'numeric' });
+                  const monthName = d.toLocaleDateString([], { month: 'short' });
+                  const isSelected = selectedDate === dateStr;
 
-              <div className="grid grid-cols-7 gap-y-4 gap-x-2 text-center font-label-md text-label-md mb-2">
-                {["Su", "Mo", "Tu", "We", "Th", "Fr", "Sa"].map((day) => (
-                  <div key={day} className="text-outline font-bold">
-                    {day}
-                  </div>
-                ))}
-                <div></div>
-                <div></div>
-                {/* Calendar Days */}
-                <div className="text-outline cursor-not-allowed select-none">1</div>
-                <div className="text-outline cursor-not-allowed select-none">2</div>
-                <div className="w-8 h-8 mx-auto flex items-center justify-center rounded-full hover:bg-surface-container cursor-pointer text-primary transition-colors font-medium">3</div>
-                <div className="w-8 h-8 mx-auto flex items-center justify-center rounded-full hover:bg-surface-container cursor-pointer text-primary transition-colors font-medium">4</div>
-                <div className="w-8 h-8 mx-auto flex items-center justify-center rounded-full hover:bg-surface-container cursor-pointer text-primary transition-colors font-medium">5</div>
-                <div className="w-8 h-8 mx-auto flex items-center justify-center rounded-full hover:bg-surface-container cursor-pointer text-primary transition-colors font-medium">6</div>
-                <div
-                  onClick={() => handleSelectDate("Oct 7, 2024")}
-                  className={`w-8 h-8 mx-auto flex items-center justify-center rounded-full cursor-pointer transition-colors font-bold ${
-                    selectedDate === "Oct 7, 2024"
-                      ? "bg-primary text-on-primary shadow-sm"
-                      : "hover:bg-surface-container text-primary"
-                  }`}
-                >
-                  7
-                </div>
-                <div className="w-8 h-8 mx-auto flex items-center justify-center rounded-full hover:bg-surface-container cursor-pointer text-primary transition-colors font-medium">8</div>
-                <div className="w-8 h-8 mx-auto flex items-center justify-center rounded-full hover:bg-surface-container cursor-pointer text-primary transition-colors font-medium">9</div>
-                <div className="w-8 h-8 mx-auto flex items-center justify-center rounded-full hover:bg-surface-container cursor-pointer text-primary transition-colors font-medium">10</div>
-                <div className="w-8 h-8 mx-auto flex items-center justify-center rounded-full hover:bg-surface-container cursor-pointer text-primary transition-colors font-medium">11</div>
-                <div className="w-8 h-8 mx-auto flex items-center justify-center rounded-full hover:bg-surface-container cursor-pointer text-primary transition-colors font-medium">12</div>
-                <div className="w-8 h-8 mx-auto flex items-center justify-center rounded-full hover:bg-surface-container cursor-pointer text-primary transition-colors font-medium">13</div>
-                <div className="w-8 h-8 mx-auto flex items-center justify-center rounded-full hover:bg-surface-container cursor-pointer text-primary transition-colors font-medium">14</div>
-                <div
-                  onClick={() => handleSelectDate("Oct 15, 2024")}
-                  className={`w-8 h-8 mx-auto flex items-center justify-center rounded-full cursor-pointer transition-colors font-bold ${
-                    selectedDate === "Oct 15, 2024"
-                      ? "bg-primary text-on-primary shadow-sm"
-                      : "hover:bg-surface-container text-primary"
-                  }`}
-                >
-                  15
-                </div>
+                  return (
+                    <button
+                      key={dateStr}
+                      type="button"
+                      onClick={() => handleSelectDate(dateStr)}
+                      className={`p-4 rounded-2xl border text-center transition-all cursor-pointer ${
+                        isSelected
+                          ? "border-primary bg-primary/10 text-primary font-bold shadow-sm"
+                          : "border-outline-variant text-on-surface-variant hover:border-primary/50 hover:text-primary bg-surface-container-lowest"
+                      }`}
+                    >
+                      <div className="text-xs uppercase tracking-wider font-semibold opacity-75">{dayName}</div>
+                      <div className="text-3xl font-bold my-1">{dayNum}</div>
+                      <div className="text-xs font-semibold">{monthName}</div>
+                    </button>
+                  );
+                })}
               </div>
             </div>
 
@@ -524,21 +575,59 @@ function BookContent() {
                 Available slots for {selectedDate}
               </h3>
               
-              <div className="time-slots-container grid grid-cols-2 sm:grid-cols-4 gap-3">
-                {["09:00 AM", "09:30 AM", "10:00 AM", "11:00 AM", "01:30 PM", "02:00 PM", "03:45 PM", "04:15 PM"].map((time) => (
-                  <button
-                    key={time}
-                    onClick={() => handleSelectTime(time)}
-                    className={`border py-3.5 rounded-xl font-label-md text-label-md transition-colors cursor-pointer font-semibold text-center ${
-                      selectedTime === time
-                        ? "border-primary bg-primary text-on-primary font-bold"
-                        : "border-outline-variant text-primary hover:border-primary bg-surface-container-lowest"
-                    }`}
-                  >
-                    {time}
-                  </button>
-                ))}
-              </div>
+              {loadingSlots ? (
+                <div className="flex justify-center items-center py-12">
+                  <span className="animate-spin material-symbols-outlined text-3xl text-primary">sync</span>
+                </div>
+              ) : (
+                (() => {
+                  const candidateSlots = ["09:00 AM", "09:30 AM", "10:00 AM", "11:00 AM", "01:30 PM", "02:00 PM", "03:45 PM", "04:15 PM"];
+                  const availableSlots = candidateSlots.filter((time) => {
+                    const slotDate = new Date(`${selectedDate} ${time}`);
+                    
+                    // 1. Enforce: Time must be in the future
+                    if (slotDate <= new Date()) {
+                      return false;
+                    }
+                    
+                    // 2. Enforce: Double booking prevention
+                    const isBooked = bookedSlots.some((isoStr) => {
+                      const bookedDate = new Date(isoStr);
+                      return bookedDate.getTime() === slotDate.getTime();
+                    });
+                    
+                    return !isBooked;
+                  });
+
+                  if (availableSlots.length === 0) {
+                    return (
+                      <div className="text-center py-8 text-on-surface-variant font-medium">
+                        <span className="material-symbols-outlined text-4xl text-outline mb-2">event_busy</span>
+                        <p className="text-sm">No slots available for this date. Please choose another date.</p>
+                      </div>
+                    );
+                  }
+
+                  return (
+                    <div className="time-slots-container grid grid-cols-2 sm:grid-cols-4 gap-3">
+                      {availableSlots.map((time) => (
+                        <button
+                          key={time}
+                          type="button"
+                          onClick={() => handleSelectTime(time)}
+                          className={`border py-3.5 rounded-xl font-label-md text-label-md transition-colors cursor-pointer font-semibold text-center ${
+                            selectedTime === time
+                              ? "border-primary bg-primary text-on-primary font-bold"
+                              : "border-outline-variant text-primary hover:border-primary bg-surface-container-lowest"
+                          }`}
+                        >
+                          {time}
+                        </button>
+                      ))}
+                    </div>
+                  );
+                })()
+              )}
             </div>
           </div>
         )}
@@ -554,9 +643,9 @@ function BookContent() {
               <span>Back to Time Slots</span>
             </div>
 
-            <div className="grid grid-cols-1 md:grid-cols-12 gap-8 items-start">
+            <div className="grid grid-cols-1 md:grid-cols-12 gap-8 items-start relative">
               {/* Form details */}
-              <div className="md:col-span-8 bg-surface-container-lowest border border-outline-variant/60 rounded-3xl p-5 sm:p-8 shadow-sm">
+              <div className={`md:col-span-8 bg-surface-container-lowest border border-outline-variant/60 rounded-3xl p-5 sm:p-8 shadow-sm transition-all duration-300 ${!isLoggedIn ? 'blur-md pointer-events-none' : ''}`}>
                 <h2 className="text-headline-md font-headline-md text-primary mb-2 font-bold">
                   Patient Information
                 </h2>
@@ -569,9 +658,10 @@ function BookContent() {
                     <div className="flex flex-col gap-2">
                       <label className="font-label-md text-label-md text-primary font-bold">First Name</label>
                       <input
-                        className="h-14 px-4 bg-surface-container-low/40 border border-outline-variant rounded-xl focus:outline-none focus:border-secondary focus:ring-1 focus:ring-secondary transition-colors font-body-md text-body-md"
+                        className="h-14 px-4 bg-surface-container-low/40 border border-outline-variant rounded-xl focus:outline-none focus:border-secondary focus:ring-1 focus:ring-secondary transition-colors font-body-md text-body-md read-only:opacity-85 read-only:cursor-not-allowed"
                         placeholder="John"
                         required
+                        readOnly={isLoggedIn}
                         type="text"
                         value={firstName}
                         onChange={(e) => setFirstName(e.target.value)}
@@ -580,9 +670,10 @@ function BookContent() {
                     <div className="flex flex-col gap-2">
                       <label className="font-label-md text-label-md text-primary font-bold">Last Name</label>
                       <input
-                        className="h-14 px-4 bg-surface-container-low/40 border border-outline-variant rounded-xl focus:outline-none focus:border-secondary focus:ring-1 focus:ring-secondary transition-colors font-body-md text-body-md"
+                        className="h-14 px-4 bg-surface-container-low/40 border border-outline-variant rounded-xl focus:outline-none focus:border-secondary focus:ring-1 focus:ring-secondary transition-colors font-body-md text-body-md read-only:opacity-85 read-only:cursor-not-allowed"
                         placeholder="Doe"
                         required
+                        readOnly={isLoggedIn}
                         type="text"
                         value={lastName}
                         onChange={(e) => setLastName(e.target.value)}
@@ -593,9 +684,10 @@ function BookContent() {
                     <div className="flex flex-col gap-2">
                       <label className="font-label-md text-label-md text-primary font-bold">Email Address</label>
                       <input
-                        className="h-14 px-4 bg-surface-container-low/40 border border-outline-variant rounded-xl focus:outline-none focus:border-secondary focus:ring-1 focus:ring-secondary transition-colors font-body-md text-body-md"
+                        className="h-14 px-4 bg-surface-container-low/40 border border-outline-variant rounded-xl focus:outline-none focus:border-secondary focus:ring-1 focus:ring-secondary transition-colors font-body-md text-body-md read-only:opacity-85 read-only:cursor-not-allowed"
                         placeholder="john.doe@example.com"
                         required
+                        readOnly={isLoggedIn}
                         type="email"
                         value={email}
                         onChange={(e) => setEmail(e.target.value)}
@@ -676,6 +768,17 @@ function BookContent() {
                   </div>
                 </div>
               </div>
+
+              {/* Inline Authentication Overlay */}
+              {!isLoggedIn && (
+                <AuthModal
+                  canClose={false}
+                  onSuccess={() => {
+                    setIsLoggedIn(true);
+                    window.dispatchEvent(new Event("aura_auth_change"));
+                  }}
+                />
+              )}
             </div>
           </div>
         )}

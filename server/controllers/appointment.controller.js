@@ -2,11 +2,38 @@ const appointmentService = require('../services/appointment.service');
 
 const bookAppointment = async (req, res, next) => {
   try {
-    const appointment = await appointmentService.createAppointment(req.body);
+    // Override patientEmail and patientName from authenticated user
+    const appointmentData = {
+      ...req.body,
+      patientEmail: req.user.email,
+      patientName: req.user.name
+    };
+    const appointment = await appointmentService.createAppointment(appointmentData);
 
     return res.status(201).json({
       success: true,
       data: appointment
+    });
+  } catch (error) {
+    next(error);
+  }
+};
+
+const getBookedSlots = async (req, res, next) => {
+  try {
+    const { doctorId } = req.params;
+    const { date } = req.query;
+    if (!date) {
+      return res.status(400).json({
+        success: false,
+        message: 'Date query parameter is required'
+      });
+    }
+
+    const slots = await appointmentService.getBookedSlotsForDoctor(doctorId, date);
+    return res.status(200).json({
+      success: true,
+      data: slots
     });
   } catch (error) {
     next(error);
@@ -44,6 +71,7 @@ const getAppointmentDetail = async (req, res, next) => {
 
 module.exports = {
   bookAppointment,
+  getBookedSlots,
   getAppointments,
   getAppointmentDetail
 };

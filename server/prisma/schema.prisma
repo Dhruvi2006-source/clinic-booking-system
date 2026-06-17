@@ -1,10 +1,10 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
 datasource db {
   provider = "postgresql"
   url      = env("DATABASE_URL")
-}
-
-generator client {
-  provider = "prisma-client-js"
 }
 
 model User {
@@ -12,13 +12,8 @@ model User {
   name      String
   email     String   @unique
   password  String
-  role      Role
+  role      Role     @default(PATIENT)
   createdAt DateTime @default(now())
-}
-
-enum Role {
-  PATIENT
-  ADMIN
 }
 
 model Doctor {
@@ -30,10 +25,8 @@ model Doctor {
   experience      Int
   rating          Float
   consultationFee Float
-
-  appointments    Appointment[]
-
   createdAt       DateTime      @default(now())
+  appointments    Appointment[]
 }
 
 model Appointment {
@@ -44,11 +37,16 @@ model Appointment {
   consultationType ConsultationType
   appointmentDate  DateTime
   doctorId         String
-  doctor           Doctor           @relation(fields: [doctorId], references: [id])
   createdAt        DateTime         @default(now())
+  doctor           Doctor           @relation(fields: [doctorId], references: [id])
 }
 
 enum ConsultationType {
   VIRTUAL
   IN_CLINIC
+}
+
+enum Role {
+  PATIENT
+  ADMIN
 }

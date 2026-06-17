@@ -20,7 +20,7 @@ const registerUser = async (name, email, password, role) => {
       name,
       email,
       password: hashedPassword,
-      role
+      role: role || 'PATIENT'
     }
   });
 

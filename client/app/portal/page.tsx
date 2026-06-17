@@ -3,53 +3,79 @@
 import Link from "next/link";
 import { useState, useEffect } from "react";
 import { mockVitals } from "@/lib/mockData";
+import AuthModal from "@/components/AuthModal";
 
 export default function PatientPortal() {
   const [appointment, setAppointment] = useState<any>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
+  const [patientName, setPatientName] = useState<string>("Patient");
+  const [isUnauthenticated, setIsUnauthenticated] = useState(false);
+
+  const fetchPatientData = async () => {
+    try {
+      setLoading(true);
+      setError(null);
+      const token = localStorage.getItem("aura_patient_token");
+      if (!token) {
+        setIsUnauthenticated(true);
+        setLoading(false);
+        return;
+      }
+
+      // Fetch user profile info
+      const meRes = await fetch("http://localhost:5000/api/auth/me", {
+        headers: { Authorization: `Bearer ${token}` }
+      });
+      const meJson = await meRes.json();
+
+      if (meJson.success) {
+        setPatientName(meJson.data.name);
+      } else {
+        localStorage.removeItem("aura_patient_token");
+        localStorage.removeItem("aura_patient_user");
+        window.dispatchEvent(new Event("aura_auth_change"));
+        setIsUnauthenticated(true);
+        setLoading(false);
+        return;
+      }
+
+      // Fetch patient appointments
+      const appRes = await fetch("http://localhost:5000/api/appointments", {
+        headers: { Authorization: `Bearer ${token}` }
+      });
+      const appJson = await appRes.json();
+
+      if (appJson.success) {
+        // Get the most recent upcoming appointment (based on date)
+        const upcoming = appJson.data.find((app: any) => new Date(app.appointmentDate) >= new Date());
+        setAppointment(upcoming || appJson.data[0] || null);
+        setIsUnauthenticated(false);
+      } else {
+        throw new Error("Failed to load appointments");
+      }
+    } catch (err: any) {
+      setError(err.message || "An error occurred");
+    } finally {
+      setLoading(false);
+    }
+  };
 
   useEffect(() => {
-    const fetchPatientData = async () => {
-      try {
-        let token = localStorage.getItem("aura_patient_token");
-        if (!token) {
-          // Silent login as default patient
-          const loginRes = await fetch("http://localhost:5000/api/auth/login", {
-            method: "POST",
-            headers: { "Content-Type": "application/json" },
-            body: JSON.stringify({ email: "patient@example.com", password: "patient123" })
-          });
-          const loginJson = await loginRes.json();
-          if (loginJson.success) {
-            token = loginJson.data.token;
-            localStorage.setItem("aura_patient_token", token!);
-          } else {
-            throw new Error(loginJson.message || "Failed to authenticate patient session");
-          }
-        }
-
-        // Fetch patient appointments
-        const appRes = await fetch("http://localhost:5000/api/appointments", {
-          headers: { Authorization: `Bearer ${token}` }
-        });
-        const appJson = await appRes.json();
-
-        if (appJson.success) {
-          // Get the most recent upcoming appointment (based on date)
-          const upcoming = appJson.data.find((app: any) => new Date(app.appointmentDate) >= new Date());
-          setAppointment(upcoming || appJson.data[0] || null);
-        } else {
-          throw new Error("Failed to load appointments");
-        }
-      } catch (err: any) {
-        setError(err.message || "An error occurred");
-        localStorage.removeItem("aura_patient_token");
-      } finally {
+    const checkAuth = () => {
+      const token = localStorage.getItem("aura_patient_token");
+      if (!token) {
+        setIsUnauthenticated(true);
+        setAppointment(null);
+        setPatientName("Patient");
         setLoading(false);
+      } else {
+        fetchPatientData();
       }
     };
-    fetchPatientData();
+    checkAuth();
+    window.addEventListener("aura_auth_change", checkAuth);
+    return () => window.removeEventListener("aura_auth_change", checkAuth);
   }, []);
 
   return (
@@ -61,7 +87,7 @@ export default function PatientPortal() {
       {/* Welcome Header */}
       <header className="mb-12 relative z-10">
         <h1 className="font-display-lg text-headline-lg-mobile md:text-display-lg text-on-surface mb-2 font-bold leading-tight">
-          Good morning, Patient.
+          Good morning, {patientName}.
         </h1>
         <p className="font-body-lg text-body-lg text-secondary">
           Here is your health overview for today.
@@ -298,6 +324,17 @@ export default function PatientPortal() {
           </div>
         </div>
       </div>
+
+      {/* Auth Modal Overlay */}
+      {isUnauthenticated && (
+        <AuthModal
+          canClose={false}
+          onSuccess={() => {
+            setIsUnauthenticated(false);
+            fetchPatientData();
+          }}
+        />
+      )}
     </main>
   );
 }

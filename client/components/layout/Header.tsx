@@ -3,12 +3,34 @@
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { useState, useEffect } from "react";
+import AuthModal from "../AuthModal";
 
 export default function Header() {
   const pathname = usePathname();
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const [servicesDropdownOpen, setServicesDropdownOpen] = useState(false);
   const [mobileServicesOpen, setMobileServicesOpen] = useState(false);
+  
+  // Auth States
+  const [isLoggedIn, setIsLoggedIn] = useState(false);
+  const [showAuthModal, setShowAuthModal] = useState(false);
+
+  useEffect(() => {
+    const checkAuth = () => {
+      const token = localStorage.getItem("aura_patient_token");
+      setIsLoggedIn(!!token);
+    };
+    checkAuth();
+    window.addEventListener("aura_auth_change", checkAuth);
+    return () => window.removeEventListener("aura_auth_change", checkAuth);
+  }, []);
+
+  const handleLogout = () => {
+    localStorage.removeItem("aura_patient_token");
+    localStorage.removeItem("aura_patient_user");
+    window.dispatchEvent(new Event("aura_auth_change"));
+    window.location.href = "/";
+  };
 
   const isAdmin = pathname.startsWith("/admin");
 
@@ -194,12 +216,29 @@ export default function Header() {
           <div className="flex items-center gap-4">
             {/* Desktop CTAs */}
             <div className="hidden md:flex items-center gap-4">
-              <Link
-                href="/portal"
-                className="font-label-md text-label-md text-white/90 hover:text-yellow-200 hover:font-bold transition-colors duration-200 font-semibold"
-              >
-                Patient Portal
-              </Link>
+              {isLoggedIn ? (
+                <>
+                  <Link
+                    href="/portal"
+                    className="font-label-md text-label-md text-white/90 hover:text-yellow-200 hover:font-bold transition-colors duration-200 font-semibold"
+                  >
+                    Patient Portal
+                  </Link>
+                  <button
+                    onClick={handleLogout}
+                    className="font-label-md text-label-md text-white/90 hover:text-[#ff4444] hover:font-bold transition-colors duration-200 font-semibold cursor-pointer"
+                  >
+                    Logout
+                  </button>
+                </>
+              ) : (
+                <button
+                  onClick={() => setShowAuthModal(true)}
+                  className="font-label-md text-label-md text-white/90 hover:text-yellow-200 hover:font-bold transition-colors duration-200 font-semibold cursor-pointer bg-transparent border-none"
+                >
+                  Patient Login
+                </button>
+              )}
               <Link
                 href="/book"
                 className="bg-[#ce3636] hover:bg-[#b02c2c] text-white font-label-md text-label-md px-6 py-3 rounded-full hover:scale-[1.02] hover:shadow-md active:scale-[0.98] transition-all flex items-center gap-2 cursor-pointer font-bold"
@@ -310,13 +349,36 @@ export default function Header() {
               </Link>
             </nav>
             <div className="pt-4 border-t border-slate-800 flex flex-col gap-3">
-              <Link
-                href="/portal"
-                onClick={() => setMobileMenuOpen(false)}
-                className="font-label-md text-label-md text-white text-center py-2"
-              >
-                Patient Portal
-              </Link>
+              {isLoggedIn ? (
+                <>
+                  <Link
+                    href="/portal"
+                    onClick={() => setMobileMenuOpen(false)}
+                    className="font-label-md text-label-md text-white text-center py-2 font-semibold hover:text-yellow-200"
+                  >
+                    Patient Portal
+                  </Link>
+                  <button
+                    onClick={() => {
+                      setMobileMenuOpen(false);
+                      handleLogout();
+                    }}
+                    className="font-label-md text-label-md text-white text-center py-2 font-semibold hover:text-[#ff4444] cursor-pointer"
+                  >
+                    Logout
+                  </button>
+                </>
+              ) : (
+                <button
+                  onClick={() => {
+                    setMobileMenuOpen(false);
+                    setShowAuthModal(true);
+                  }}
+                  className="font-label-md text-label-md text-white text-center py-2 font-semibold hover:text-yellow-200 cursor-pointer bg-transparent border-none"
+                >
+                  Patient Login
+                </button>
+              )}
               <Link
                 href="/book"
                 onClick={() => setMobileMenuOpen(false)}
@@ -328,6 +390,14 @@ export default function Header() {
           </div>
         )}
       </header>
+
+      {/* Auth Modal Overlay */}
+      {showAuthModal && (
+        <AuthModal
+          onSuccess={() => setShowAuthModal(false)}
+          onClose={() => setShowAuthModal(false)}
+        />
+      )}
     </div>
   );
 }

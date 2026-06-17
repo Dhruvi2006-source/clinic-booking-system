@@ -14,9 +14,16 @@ const createAppointment = async (appointmentData) => {
     throw error;
   }
 
+  // Enforce Business Rule: Prevent historical bookings
+  const targetDate = new Date(appointmentDate);
+  if (targetDate <= new Date()) {
+    const error = new Error('Appointment date and time must be in the future');
+    error.statusCode = 400;
+    throw error;
+  }
+
   // Enforce Business Rule: Prevent duplicate appointment booking:
   // Same doctor, Same appointmentDate
-  const targetDate = new Date(appointmentDate);
   const duplicate = await prisma.appointment.findFirst({
     where: {
       doctorId,
@@ -43,6 +50,37 @@ const createAppointment = async (appointmentData) => {
       doctor: true
     }
   });
+};
+
+const getBookedSlotsForDoctor = async (doctorId, dateStr) => {
+  const parsedDate = new Date(dateStr);
+  if (isNaN(parsedDate.getTime())) {
+    const error = new Error('Invalid date format');
+    error.statusCode = 400;
+    throw error;
+  }
+
+  // Define start and end of that day in UTC/local boundary
+  const startOfDay = new Date(parsedDate);
+  startOfDay.setHours(0, 0, 0, 0);
+
+  const endOfDay = new Date(parsedDate);
+  endOfDay.setHours(23, 59, 59, 999);
+
+  const appointments = await prisma.appointment.findMany({
+    where: {
+      doctorId,
+      appointmentDate: {
+        gte: startOfDay,
+        lte: endOfDay
+      }
+    },
+    select: {
+      appointmentDate: true
+    }
+  });
+
+  return appointments.map(app => app.appointmentDate.toISOString());
 };
 
 const getAllAppointments = async (userEmail, userRole) => {
@@ -97,6 +135,7 @@ const getAppointmentById = async (id, userEmail, userRole) => {
 
 module.exports = {
   createAppointment,
+  getBookedSlotsForDoctor,
   getAllAppointments,
   getAppointmentById
 };

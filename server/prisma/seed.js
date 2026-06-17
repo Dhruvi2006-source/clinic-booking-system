@@ -9,7 +9,19 @@ async function main() {
   await prisma.doctor.deleteMany({});
   await prisma.user.deleteMany({});
 
-  console.log('Seeding doctors...');
+  console.log('Hashing passwords...');
+  const adminPasswordHash = await bcrypt.hash('admin123', 10);
+  const patientPasswordHash = await bcrypt.hash('patient123', 10);
+
+  console.log('Seeding default users...');
+  const admin = await prisma.user.create({
+    data: {
+      name: 'Admin User',
+      email: 'admin@auraclinic.com',
+      password: adminPasswordHash,
+      role: 'ADMIN'
+    }
+  });
   console.log(`Created admin: ${admin.email}`);
 
   const patient = await prisma.user.create({
@@ -21,6 +33,44 @@ async function main() {
     }
   });
   console.log(`Created patient: ${patient.email}`);
+
+  console.log('Seeding doctors...');
+  const doctorsData = [
+    {
+      name: 'Dr. Evelyn Monroe',
+      specialty: 'Cardiology',
+      bio: 'Board-certified cardiologist specializing in preventive cardiovascular medicine, heart failure management, and advanced non-invasive cardiac imaging.',
+      experience: 12,
+      rating: 4.9,
+      consultationFee: 280.0,
+      image: 'https://images.unsplash.com/photo-1594824813573-246434de83fb?auto=format&fit=crop&w=256&q=80'
+    },
+    {
+      name: 'Dr. Marcus Vance',
+      specialty: 'Neurology',
+      bio: 'Expert clinical neurologist focusing on neuromuscular disorders, chronic migraine therapy, sleep medicine, and comprehensive stroke prevention research.',
+      experience: 15,
+      rating: 4.8,
+      consultationFee: 320.0,
+      image: 'https://images.unsplash.com/photo-1622253692010-333f2da6031d?auto=format&fit=crop&w=256&q=80'
+    },
+    {
+      name: 'Dr. Sarah Jenkins',
+      specialty: 'Dermatology',
+      bio: 'Dedicated dermatologist passionate about clinical skincare treatments, pediatric dermatology, early melanoma diagnosis, and state-of-the-art laser surgeries.',
+      experience: 8,
+      rating: 4.9,
+      consultationFee: 240.0,
+      image: 'https://images.unsplash.com/photo-1559839734-2b71ea197ec2?auto=format&fit=crop&w=256&q=80'
+    }
+  ];
+
+  for (const doc of doctorsData) {
+    const createdDoctor = await prisma.doctor.create({
+      data: doc
+    });
+    console.log(`Created doctor: ${createdDoctor.name} (ID: ${createdDoctor.id})`);
+  }
 
   console.log('Database seeding successfully completed.');
 }
