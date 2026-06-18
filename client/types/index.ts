@@ -58,3 +58,28 @@ export interface Vital {
   status?: string;
   icon: string;
 }
+
+export function mapApiDoctor(doc: any): Doctor {
+  return {
+    id: doc.id,
+    name: doc.name,
+    title: "MD, Board-Certified",
+    specialty: doc.specialty,
+    rating: doc.rating,
+    reviewsCount: Math.floor(doc.rating * 25) + 12,
+    avatar: doc.image || "https://images.unsplash.com/photo-1622253692010-333f2da6031d?auto=format&fit=crop&w=256&q=80",
+    bio: doc.bio,
+    experience: `${doc.experience}+ Years`,
+    languages: ["English", "Spanish"],
+    location: "Midtown Manhattan Suite, NY",
+    nextAvailable: "Today, 2:00 PM",
+    verified: true,
+    availableToday: true,
+    telehealth: true,
+    initialConsultationFee: doc.consultationFee,
+    boardCertifications: [
+      { title: `${doc.specialty} Specialist`, board: `American Board of ${doc.specialty}` },
+    ],
+    specialties: [doc.specialty, "Preventive Exams", "Chronic Care Management"],
+  };
+}

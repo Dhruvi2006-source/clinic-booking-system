@@ -384,7 +384,7 @@ export default function HeroCarousel() {
 
             {/* Floating card — top left (hidden on smallest screens to avoid overflow) */}
             <div
-              className="absolute -left-8 sm:-left-14 top-6 sm:top-16 glass-card rounded-2xl p-3 sm:p-4 shadow-lg animate-float-a hidden sm:block"
+              className="absolute -left-8 sm:-left-14 top-6 sm:top-16 glass-card rounded-2xl p-3 sm:p-4 shadow-lg animate-float-a hidden sm:block "
               style={{
                 boxShadow: "0 12px 40px rgba(11,59,110,0.12)",
                 width: "clamp(140px, 20vw, 208px)",

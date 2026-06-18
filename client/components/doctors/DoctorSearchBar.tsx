@@ -18,19 +18,29 @@ export default function DoctorSearchBar({
   onLocationChange,
 }: DoctorSearchBarProps) {
   return (
-    <div className="glass-panel w-full rounded-2xl p-2 flex flex-col md:flex-row gap-2 shadow-sm relative z-10">
-      <div className="flex-1 flex items-center bg-surface-container-lowest rounded-xl px-4 py-3 soft-border focus-within:border-tertiary transition-colors">
-        <span className="material-symbols-outlined text-outline mr-3">search</span>
+    <div className="glass-panel w-full rounded-2xl p-6 md:p-8 flex flex-col md:flex-row gap-4 justify-center items-center">
+      <div
+        className="w-full md:flex-1 flex items-center bg-surface-container-lowest rounded-xl soft-border focus-within:border-tertiary transition-colors"
+        style={{ padding: 9 }}
+      >
+        <span className="material-symbols-outlined text-outline mr-3">
+          search
+        </span>
         <input
-          className="w-full bg-transparent border-none focus:ring-0 p-0 text-body-md font-body-md placeholder-outline focus:outline-none"
+          className="w-full bg-transparent border-none focus:ring-0 p-0 text-body-md font-body-md placeholder-gray-900 focus:outline-none text-gray-800"
           placeholder="Search by name or condition..."
           type="text"
           value={searchTerm}
           onChange={(e) => onSearchChange(e.target.value)}
         />
       </div>
-      <div className="flex-1 flex items-center bg-surface-container-lowest rounded-xl px-4 py-3 soft-border focus-within:border-tertiary transition-colors">
-        <span className="material-symbols-outlined text-outline mr-3">stethoscope</span>
+      <div
+        className="w-full md:flex-1 flex items-center bg-surface-container-lowest rounded-xl px-4 py-3 soft-border focus-within:border-tertiary transition-colors"
+        style={{ padding: 9 }}
+      >
+        <span className="material-symbols-outlined text-outline mr-3">
+          stethoscope
+        </span>
         <select
           className="w-full bg-transparent border-none focus:ring-0 p-0 text-body-md font-body-md text-on-surface appearance-none cursor-pointer focus:outline-none"
           value={specialtyFilter}
@@ -43,8 +53,13 @@ export default function DoctorSearchBar({
           <option value="pedia">Pediatrics</option>
         </select>
       </div>
-      <div className="flex-1 flex items-center bg-surface-container-lowest rounded-xl px-4 py-3 soft-border focus-within:border-tertiary transition-colors">
-        <span className="material-symbols-outlined text-outline mr-3">location_on</span>
+      <div
+        className="w-full md:flex-1 flex items-center bg-surface-container-lowest rounded-xl px-4 py-3 soft-border focus-within:border-tertiary transition-colors"
+        style={{ padding: 9 }}
+      >
+        <span className="material-symbols-outlined text-outline mr-3">
+          location_on
+        </span>
         <select
           className="w-full bg-transparent border-none focus:ring-0 p-0 text-body-md font-body-md text-on-surface appearance-none cursor-pointer focus:outline-none"
           value={locationFilter}
@@ -56,7 +71,10 @@ export default function DoctorSearchBar({
           <option value="ln">London West End</option>
         </select>
       </div>
-      <button className="bg-primary text-on-primary px-8 py-3 rounded-xl text-label-md font-label-md hover:bg-primary/95 transition-all duration-300 flex items-center justify-center gap-2 cursor-pointer">
+      <button
+        className=" md:w-auto bg-primary text-on-primary  rounded-xl text-label-md font-label-md hover:bg-primary/95 transition-all duration-300 flex items-center justify-center gap-2 cursor-pointer"
+        style={{ paddingTop: 9 , paddingLeft: 15 , paddingRight: 15 , paddingBottom: 9}}
+      >
         Search
       </button>
     </div>

@@ -2,7 +2,7 @@
 
 import { useSearchParams } from "next/navigation";
 import { useState, useEffect, Suspense } from "react";
-import { Doctor } from "@/types";
+import { Doctor, mapApiDoctor } from "@/types";
 
 import DoctorSearchBar    from "@/components/doctors/DoctorSearchBar";
 import DoctorQuickFilters from "@/components/doctors/DoctorQuickFilters";
@@ -37,28 +37,7 @@ function DirectoryContent() {
         const res  = await fetch("http://localhost:5000/api/doctors");
         const json = await res.json();
         if (json.success) {
-          const mapped = json.data.map((doc: any) => ({
-            id: doc.id,
-            name: doc.name,
-            title: "MD, Board-Certified",
-            specialty: doc.specialty,
-            rating: doc.rating,
-            reviewsCount: Math.floor(doc.rating * 25) + 12,
-            avatar: doc.image || "https://images.unsplash.com/photo-1622253692010-333f2da6031d?auto=format&fit=crop&w=256&q=80",
-            bio: doc.bio,
-            experience: `${doc.experience}+ Years`,
-            languages: ["English", "Spanish"],
-            location: "Midtown Manhattan Suite, NY",
-            nextAvailable: "Today, 2:00 PM",
-            verified: true,
-            availableToday: true,
-            telehealth: true,
-            initialConsultationFee: doc.consultationFee,
-            boardCertifications: [
-              { title: `${doc.specialty} Specialist`, board: `American Board of ${doc.specialty}` },
-            ],
-            specialties: [doc.specialty, "Preventive Exams", "Chronic Care Management"],
-          }));
+          const mapped = json.data.map(mapApiDoctor);
           setDoctors(mapped);
         } else {
           setError(json.message || "Failed to load doctors");
@@ -114,38 +93,42 @@ function DirectoryContent() {
     setQuickFilter((prev) => (prev === filter ? null : filter));
 
   return (
-    <main className="flex-grow flex flex-col items-center w-full px-margin-mobile md:px-margin-desktop max-w-container-max mx-auto py-12 gap-section-gap">
+    <main className="flex-grow flex flex-col items-center w-full px-4 sm:px-6 lg:px-8 max-w-7xl mx-auto py-12 gap-12">
 
       {/* Hero & Search */}
-      <section className="w-full flex flex-col gap-8 text-center md:text-left">
-        <div className="max-w-2xl">
-          <h1 className="text-headline-lg-mobile md:text-display-lg font-headline-lg-mobile md:font-display-lg text-on-surface mb-4 font-bold">
+      <section className="w-full flex flex-col gap-8 justify-center items-center text-center">
+        <div className="max-w-3xl flex flex-col gap-4 mx-auto">
+          <h1 className="text-headline md:text-display-lg text-on-surface font-bold text-center" style={{ paddingTop: 10 }}>
             Find your specialist.
           </h1>
-          <p className="text-body-lg font-body-lg text-on-surface-variant">
+          <p className="text-body-lg text-on-surface-variant text-center max-w-2xl mx-auto">
             Exceptional care tailored to your needs. Browse our directory of world-class medical professionals.
           </p>
         </div>
 
-        <DoctorSearchBar
-          searchTerm={searchTerm}
-          specialtyFilter={specialtyFilter}
-          locationFilter={locationFilter}
-          onSearchChange={setSearchTerm}
-          onSpecialtyChange={setSpecialtyFilter}
-          onLocationChange={setLocationFilter}
-        />
+        <div className="flex justify-center w-full max-w-5xl mx-auto">
+          <DoctorSearchBar
+            searchTerm={searchTerm}
+            specialtyFilter={specialtyFilter}
+            locationFilter={locationFilter}
+            onSearchChange={setSearchTerm}
+            onSpecialtyChange={setSpecialtyFilter}
+            onLocationChange={setLocationFilter}
+          />
+        </div>
 
-        <DoctorQuickFilters quickFilter={quickFilter} onToggle={toggleQuickFilter} />
+        <div className="flex justify-center w-full max-w-5xl mx-auto">
+          <DoctorQuickFilters quickFilter={quickFilter} onToggle={toggleQuickFilter} />
+        </div>
       </section>
 
       {/* Directory Grid */}
-      <section className="w-full">
-        <div className="flex justify-between items-center mb-6">
-          <h2 className="text-headline-md font-headline-md text-on-surface font-semibold">
+      <section className="w-full max-w-6xl mx-auto flex flex-col items-center">
+        <div className="flex flex-col sm:flex-row justify-between items-center w-full mb-8">
+          <h2 className="text-headline-md text-on-surface font-semibold text-center sm:text-left mb-2 sm:mb-0">
             Available Specialists
           </h2>
-          <span className="text-caption font-caption text-on-surface-variant font-medium">
+          <span className="text-caption text-on-surface-variant font-medium">
             Showing {filteredDoctors.length} results
           </span>
         </div>

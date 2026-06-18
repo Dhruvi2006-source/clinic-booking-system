@@ -16,7 +16,7 @@ export default function RootLayout({
   return (
     <html
       lang="en"
-      className="h-full antialiased"
+      className="antialiased"
     >
       <head>
         {/* Viewport – essential for mobile responsiveness */}
@@ -35,7 +35,7 @@ export default function RootLayout({
           rel="stylesheet"
         />
       </head>
-      <body className="min-h-full flex flex-col w-full overflow-x-hidden" style={{ background: "#FAFBFD", color: "#0F172A" }}>
+      <body className="min-h-screen flex flex-col w-full" style={{ background: "#FAFBFD", color: "#0F172A" }}>
         <Header />
         <div className="flex-grow flex flex-col w-full">
           {children}
