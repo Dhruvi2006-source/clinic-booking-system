@@ -65,22 +65,42 @@ export default function Header() {
   return (
     <>
       {/* ── Top utility bar ── */}
-      <div className="w-full bg-[#071B34] text-white/80 text-xs py-2.5 px-5 hidden md:block">
-        <div className="max-w-[1280px] mx-auto flex justify-between items-center">
-          <div className="flex items-center gap-6">
-            <a href={`tel:${phone}`} className="flex items-center gap-1.5 hover:text-white transition-colors font-medium">
-              <span className="material-symbols-outlined text-[13px] icon-fill" style={{ fontVariationSettings:"'FILL' 1" }}>call</span>
+      <div
+        className="w-full bg-[#071B34] text-white/80 text-xs py-5.5"
+        style={{
+          paddingLeft: "clamp(16px, 4vw, 32px)",
+          paddingRight: "clamp(16px, 4vw, 32px)",
+          paddingTop: "clamp(4px, 1vw, 8px)",
+          paddingBottom: "clamp(4px, 1vw, 8px)",
+        }}
+      >
+        <div className="max-w-[1280px] mx-auto flex justify-between items-center gap-4 flex-wrap">
+          <div className="flex items-center gap-4 flex-wrap">
+            <a
+              href={`tel:${phone}`}
+              className="flex items-center gap-1.5 hover:text-white transition-colors font-medium"
+            >
+              <span
+                className="material-symbols-outlined text-[13px] icon-fill"
+                style={{ fontVariationSettings: "'FILL' 1" }}
+              >
+                call
+              </span>
               {phone}
             </a>
-            <span className="text-white/30">|</span>
-            <span className="flex items-center gap-1.5">
-              <span className="material-symbols-outlined text-[13px]">location_on</span>
+            <span className="text-white/30 hidden sm:inline">|</span>
+            <span className="hidden sm:flex items-center gap-1.5">
+              <span className="material-symbols-outlined text-[13px]">
+                location_on
+              </span>
               730 Fifth Avenue, Floor 14, New York, NY 10019
             </span>
           </div>
           <div className="flex items-center gap-2">
-            <span className="w-1.5 h-1.5 rounded-full bg-[#16A34A] animate-dot-pulse"></span>
-            <span className="font-semibold tracking-wide text-[11px] text-white/70 uppercase">Walk-ins welcome · Same-day appointments</span>
+            <span className="w-2.5 h-2.5 rounded-full bg-[#ff0000] animate-dot-pulse"></span>
+            <span className="font-semibold tracking-wide text-[11px] text-white/70 uppercase">
+              Walk-ins welcome · Same-day
+            </span>
           </div>
         </div>
       </div>
@@ -92,29 +112,56 @@ export default function Header() {
             ? "bg-white/95 backdrop-blur-[20px] shadow-[0_1px_32px_rgba(15,23,42,0.08)] border-b border-[rgba(15,23,42,0.06)]"
             : "bg-white/80 backdrop-blur-[20px] border-b border-[rgba(15,23,42,0.06)]"
         }`}
-        style={{ height: "88px" }}
       >
-        <div className="max-w-[1280px] mx-auto h-full px-5 md:px-8 flex items-center justify-between gap-8">
-
+        <div
+          className="max-w-[1280px] mx-auto flex justify-between gap-3"
+          style={{
+            height: "clamp(56px, 8vw, 80px)",
+            paddingLeft: "clamp(16px, 4vw, 32px)",
+            paddingRight: "clamp(16px, 4vw, 32px)",
+          }}
+        >
           {/* Logo */}
-          <Link href="/" className="flex items-center gap-2.5 shrink-0 group">
-            <div className="w-9 h-9 rounded-xl bg-[#0B3B6E] flex items-center justify-center shadow-md group-hover:shadow-lg transition-shadow">
-              <span className="material-symbols-outlined text-white text-[20px] icon-fill" style={{ fontVariationSettings:"'FILL' 1" }}>
+          <Link href="/" className="flex items-center gap-2 shrink-0 group">
+            <div
+              className="rounded-xl bg-[#0B3B6E] flex items-center justify-center shadow-md group-hover:shadow-lg transition-shadow"
+              style={{
+                width: "clamp(30px, 4vw, 36px)",
+                height: "clamp(30px, 4vw, 36px)",
+              }}
+            >
+              <span
+                className="material-symbols-outlined text-white icon-fill"
+                style={{
+                  fontSize: "clamp(16px, 2.5vw, 20px)",
+                  fontVariationSettings: "'FILL' 1",
+                }}
+              >
                 health_and_safety
               </span>
             </div>
             <div className="flex flex-col leading-none">
-              <span className="font-[Plus_Jakarta_Sans,Manrope,sans-serif] font-800 text-[#0B3B6E] text-[17px] tracking-tight" style={{ fontWeight: 800 }}>
+              <span
+                className="text-[#0B3B6E] tracking-tight"
+                style={{
+                  fontFamily: "'Plus Jakarta Sans', Manrope, sans-serif",
+                  fontWeight: 800,
+                  fontSize: "clamp(13px, 2vw, 17px)",
+                }}
+              >
                 AuraClinic
               </span>
-              <span className="text-[10px] text-[#64748B] font-medium tracking-wide hidden sm:block">
+              <span
+                className="text-[#64748B] font-medium tracking-wide hidden sm:block"
+                style={{ fontSize: "clamp(9px, 1vw, 11px)" }}
+              >
                 Medical Excellence
               </span>
             </div>
           </Link>
 
           {/* Desktop nav */}
-          <nav className="hidden lg:flex items-center gap-1 h-full">
+          <nav className="hidden lg:flex items-center gap-10 h-full">
             {navLinks.map((link) => {
               const isActive =
                 link.href === "/"
@@ -130,20 +177,24 @@ export default function Header() {
                     onMouseLeave={() => setServicesOpen(false)}
                   >
                     <button
-                      className={`flex items-center gap-1 px-4 h-full text-[14px] font-semibold transition-colors cursor-pointer
+                      className={`flex items-center gap-1 px-3 xl:px-4 h-full text-[14px] font-semibold transition-colors cursor-pointer
                         ${isActive ? "text-[#0B3B6E]" : "text-[#64748B] hover:text-[#0B3B6E]"}`}
                     >
                       Services
                       <span
                         className="material-symbols-outlined text-[15px] transition-transform duration-200"
-                        style={{ transform: servicesOpen ? "rotate(180deg)" : "rotate(0deg)" }}
+                        style={{
+                          transform: servicesOpen
+                            ? "rotate(180deg)"
+                            : "rotate(0deg)",
+                        }}
                       >
                         keyboard_arrow_down
                       </span>
                     </button>
 
                     {servicesOpen && (
-                      <div className="absolute top-[88px] left-1/2 -translate-x-1/2 w-[420px] bg-white rounded-2xl p-5 shadow-[0_20px_60px_rgba(11,59,110,0.15)] border border-[rgba(15,23,42,0.08)] animate-pop-in z-50">
+                      <div className="absolute top-full left-1/2 -translate-x-1/2 w-[420px] bg-white rounded-2xl p-5 shadow-[0_20px_60px_rgba(11,59,110,0.15)] border border-[rgba(15,23,42,0.08)] animate-pop-in z-50">
                         <div className="grid grid-cols-2 gap-2">
                           {serviceItems.map((s) => (
                             <Link
@@ -152,7 +203,9 @@ export default function Header() {
                               className="flex items-center gap-3 px-3 py-2.5 rounded-xl hover:bg-[#F1F5F9] transition-colors group"
                             >
                               <span className="w-8 h-8 rounded-lg bg-[#E8F0FB] flex items-center justify-center shrink-0">
-                                <span className="material-symbols-outlined text-[#0B3B6E] text-[16px]">{s.icon}</span>
+                                <span className="material-symbols-outlined text-[#0B3B6E] text-[16px]">
+                                  {s.icon}
+                                </span>
                               </span>
                               <span className="text-[13px] font-semibold text-[#0F172A] group-hover:text-[#0B3B6E] transition-colors">
                                 {s.label}
@@ -166,7 +219,9 @@ export default function Header() {
                             className="flex items-center justify-between text-[13px] font-semibold text-[#0B3B6E] hover:underline"
                           >
                             View all services
-                            <span className="material-symbols-outlined text-[16px]">arrow_forward</span>
+                            <span className="material-symbols-outlined text-[16px]">
+                              arrow_forward
+                            </span>
                           </Link>
                         </div>
                       </div>
@@ -179,7 +234,7 @@ export default function Header() {
                 <Link
                   key={link.label}
                   href={link.href}
-                  className={`px-4 h-full flex items-center text-[14px] font-semibold transition-colors
+                  className={`px-3 xl:px-4 h-full flex items-center text-[14px] font-semibold transition-colors
                     ${isActive ? "text-[#0B3B6E]" : "text-[#64748B] hover:text-[#0B3B6E]"}`}
                 >
                   {link.label}
@@ -189,14 +244,16 @@ export default function Header() {
           </nav>
 
           {/* Right CTAs */}
-          <div className="flex items-center gap-3 shrink-0">
+          <div className="flex items-center gap-2 shrink-0">
             {isLoggedIn ? (
               <>
                 <Link
                   href="/portal"
                   className="hidden md:flex items-center gap-1.5 text-[13px] font-semibold text-[#64748B] hover:text-[#0B3B6E] transition-colors"
                 >
-                  <span className="material-symbols-outlined text-[15px]">person</span>
+                  <span className="material-symbols-outlined text-[15px]">
+                    person
+                  </span>
                   Portal
                 </Link>
                 <button
@@ -209,49 +266,83 @@ export default function Header() {
             ) : (
               <button
                 onClick={() => setShowAuthModal(true)}
-                className="hidden md:flex btn-secondary text-[13px] py-2.5 px-5 cursor-pointer"
+                className="hidden md:flex btn-secondary cursor-pointer"
+                style={{
+                  fontSize: "clamp(12px, 1.3vw, 13px)",
+                  padding: "8px 16px",
+                }}
               >
-                <span className="material-symbols-outlined text-[14px]">call</span>
-                Call Clinic
+                <span className="material-symbols-outlined text-[14px]">
+                  call
+                </span>
+                <span className="hidden xl:inline">Call Clinic</span>
               </button>
             )}
 
             <Link
               href="/book"
-              className="btn-primary text-[13px] py-2.5 px-5"
+              className="btn-primary whitespace-nowrap"
+              style={{
+                fontSize: "clamp(11px, 1.3vw, 13px)",
+                padding: "8px clamp(10px, 2vw, 20px)",
+              }}
             >
-              Book Appointment
-              <span className="material-symbols-outlined text-[14px]">arrow_forward</span>
+              <span className="hidden sm:inline">Book Appointment</span>
+              <span className="sm:hidden">Book</span>
+              <span className="material-symbols-outlined text-[14px]">
+                arrow_forward
+              </span>
             </Link>
 
-            {/* Mobile hamburger */}
+            {/* Mobile/tablet hamburger */}
             <button
-              className="lg:hidden w-10 h-10 rounded-xl flex items-center justify-center hover:bg-[#F1F5F9] transition-colors cursor-pointer"
+              className="lg:hidden rounded-xl flex items-center justify-center hover:bg-[#F1F5F9] transition-colors cursor-pointer"
+              style={{
+                width: "clamp(34px, 5vw, 40px)",
+                height: "clamp(34px, 5vw, 40px)",
+              }}
               onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
               aria-label="Toggle menu"
             >
-              <span className="material-symbols-outlined text-[#0B3B6E] text-[22px]">
+              <span
+                className="material-symbols-outlined text-[#0B3B6E]"
+                style={{ fontSize: "clamp(18px, 3vw, 22px)" }}
+              >
                 {mobileMenuOpen ? "close" : "menu"}
               </span>
             </button>
           </div>
         </div>
 
-        {/* Mobile drawer */}
+        {/* Mobile/tablet drawer — full viewport width */}
         {mobileMenuOpen && (
-          <div className="lg:hidden absolute top-full left-0 right-0 bg-white border-t border-[rgba(15,23,42,0.08)] shadow-xl animate-pop-in z-50">
-            <div className="p-5 space-y-1">
+          <div
+            className="lg:hidden absolute top-full left-0 right-0 w-full bg-white border-t border-[rgba(15,23,42,0.08)] shadow-xl animate-pop-in z-50"
+            style={{ maxHeight: "calc(100dvh - 56px)", overflowY: "auto" }}
+          >
+            <div
+              className="p-4 space-y-1"
+              style={{
+                paddingLeft: "clamp(16px, 4vw, 24px)",
+                paddingRight: "clamp(16px, 4vw, 24px)",
+              }}
+            >
               {navLinks.map((link) => {
                 if (link.label === "Services") {
                   return (
                     <div key="mob-services">
                       <button
-                        onClick={() => setMobileServicesOpen(!mobileServicesOpen)}
-                        className="w-full flex justify-between items-center px-4 py-3 rounded-xl text-[14px] font-semibold text-[#0F172A] hover:bg-[#F1F5F9] transition-colors cursor-pointer"
+                        onClick={() =>
+                          setMobileServicesOpen(!mobileServicesOpen)
+                        }
+                        className="w-full flex justify-between items-center px-4 py-3 rounded-xl font-semibold text-[#0F172A] hover:bg-[#F1F5F9] transition-colors cursor-pointer"
+                        style={{ fontSize: "clamp(13px, 2vw, 15px)" }}
                       >
                         Services
                         <span className="material-symbols-outlined text-[16px]">
-                          {mobileServicesOpen ? "keyboard_arrow_up" : "keyboard_arrow_down"}
+                          {mobileServicesOpen
+                            ? "keyboard_arrow_up"
+                            : "keyboard_arrow_down"}
                         </span>
                       </button>
                       {mobileServicesOpen && (
@@ -261,9 +352,15 @@ export default function Header() {
                               key={s.label}
                               href="/#services"
                               onClick={() => setMobileMenuOpen(false)}
-                              className="flex items-center gap-2 py-2 text-[13px] text-[#64748B] font-medium hover:text-[#0B3B6E]"
+                              className="flex items-center gap-2 py-2 font-medium hover:text-[#0B3B6E]"
+                              style={{
+                                fontSize: "clamp(12px, 1.8vw, 14px)",
+                                color: "#64748B",
+                              }}
                             >
-                              <span className="material-symbols-outlined text-[15px]">{s.icon}</span>
+                              <span className="material-symbols-outlined text-[15px]">
+                                {s.icon}
+                              </span>
                               {s.label}
                             </Link>
                           ))}
@@ -277,7 +374,8 @@ export default function Header() {
                     key={link.label}
                     href={link.href}
                     onClick={() => setMobileMenuOpen(false)}
-                    className="block px-4 py-3 rounded-xl text-[14px] font-semibold text-[#0F172A] hover:bg-[#F1F5F9] hover:text-[#0B3B6E] transition-colors"
+                    className="block px-4 py-3 rounded-xl font-semibold text-[#0F172A] hover:bg-[#F1F5F9] hover:text-[#0B3B6E] transition-colors"
+                    style={{ fontSize: "clamp(13px, 2vw, 15px)" }}
                   >
                     {link.label}
                   </Link>
@@ -287,17 +385,30 @@ export default function Header() {
               <div className="pt-4 border-t border-[rgba(15,23,42,0.06)] space-y-3">
                 {isLoggedIn ? (
                   <>
-                    <Link href="/portal" onClick={() => setMobileMenuOpen(false)} className="block text-center text-[14px] font-semibold text-[#0B3B6E] py-2">
+                    <Link
+                      href="/portal"
+                      onClick={() => setMobileMenuOpen(false)}
+                      className="block text-center font-semibold text-[#0B3B6E] py-2"
+                      style={{ fontSize: "clamp(13px, 2vw, 15px)" }}
+                    >
                       Patient Portal
                     </Link>
-                    <button onClick={handleLogout} className="block w-full text-center text-[14px] font-semibold text-red-500 py-2 cursor-pointer">
+                    <button
+                      onClick={handleLogout}
+                      className="block w-full text-center font-semibold text-red-500 py-2 cursor-pointer"
+                      style={{ fontSize: "clamp(13px, 2vw, 15px)" }}
+                    >
                       Logout
                     </button>
                   </>
                 ) : (
                   <button
-                    onClick={() => { setMobileMenuOpen(false); setShowAuthModal(true); }}
-                    className="w-full btn-secondary text-[14px] cursor-pointer"
+                    onClick={() => {
+                      setMobileMenuOpen(false);
+                      setShowAuthModal(true);
+                    }}
+                    className="w-full btn-secondary cursor-pointer"
+                    style={{ fontSize: "clamp(13px, 2vw, 15px)" }}
                   >
                     Patient Login
                   </button>
@@ -305,7 +416,8 @@ export default function Header() {
                 <Link
                   href="/book"
                   onClick={() => setMobileMenuOpen(false)}
-                  className="block btn-primary text-[14px] text-center"
+                  className="block btn-primary text-center"
+                  style={{ fontSize: "clamp(13px, 2vw, 15px)" }}
                 >
                   Book Appointment
                 </Link>

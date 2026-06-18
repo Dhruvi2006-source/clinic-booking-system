@@ -69,9 +69,9 @@
   --font-caption:              var(--font-body);
 
   /* Font size tokens */
-  --font-size-display-lg:         72px;
-  --font-size-headline-lg:        48px;
-  --font-size-headline-lg-mobile: 38px;
+  --font-size-display-lg:         62px;
+  --font-size-headline-lg:        38px;
+  --font-size-headline-lg-mobile: 24px;
   --font-size-headline-md:        28px;
   --font-size-body-lg:            18px;
   --font-size-body-md:            16px;
@@ -135,6 +135,8 @@
 ═══════════════════════════════════════════════════════ */
 *, *::before, *::after {
   box-sizing: border-box;
+  margin: 0;
+  padding: 0;
 }
 
 html {
@@ -142,15 +144,22 @@ html {
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
   text-rendering: optimizeLegibility;
+  /* Prevent horizontal scroll on all screen sizes */
+  overflow-x: hidden;
 }
 
 body {
   background-color: var(--background);
   color: var(--on-background);
   font-family: var(--font-body);
-  font-size: 16px;
+  /* Fluid base font: 14px on mobile → 16px on desktop */
+  font-size: clamp(14px, 1.5vw, 16px);
   line-height: 1.7;
   transition: background-color 0.3s ease, color 0.3s ease;
+  overflow-x: hidden;
+  /* Ensure body never exceeds viewport */
+  max-width: 100vw;
+  width: 100%;
 }
 
 h1, h2, h3, h4, h5, h6 {
@@ -160,6 +169,101 @@ h1, h2, h3, h4, h5, h6 {
   color: var(--on-background);
   letter-spacing: -0.02em;
 }
+
+/* ═══════════════════════════════════════════════════════
+   RESPONSIVE TYPOGRAPHY — fluid scale with clamp()
+═══════════════════════════════════════════════════════ */
+/* Hero H1: 30px mobile → 68px desktop */
+.text-hero {
+  font-size: clamp(32px, 5vw, 64px);
+}
+/* Main section headers */
+.text-headline {
+  font-size: clamp(32px, 4vw, 48px);
+}
+/* Section H2: 24px mobile → 44px desktop */
+.text-section-h2 {
+  font-size: clamp(24px, 3.5vw, 34px);
+}
+/* Section H3: 20px mobile → 36px desktop */
+.text-section-h3 {
+  font-size: clamp(20px, 2.8vw, 36px);
+}
+/* Card title: 16px mobile → 19px desktop */
+.text-card-title {
+  font-size: clamp(16px, 1.8vw, 19px);
+}
+/* Body large: 15px mobile → 18px desktop */
+.text-body-lg {
+  font-size: clamp(15px, 1.6vw, 18px);
+}
+/* Body: 13px mobile → 16px desktop */
+.text-body-md {
+  font-size: clamp(13px, 1.4vw, 16px);
+}
+/* Label / caption: 11px → 13px */
+.text-label {
+  font-size: clamp(11px, 1.1vw, 13px);
+}
+
+/* ═══════════════════════════════════════════════════════
+   RESPONSIVE IMAGES — always fill container, crop evenly
+═══════════════════════════════════════════════════════ */
+img {
+  max-width: 100%;
+  height: auto;
+  display: block;
+}
+/* When an image is inside a fixed-height container,
+   object-fit:cover + object-position:center crops equally */
+.img-cover {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  object-position: center center;
+}
+
+/* ═══════════════════════════════════════════════════════
+   RESPONSIVE NAVBAR — always exactly viewport width
+═══════════════════════════════════════════════════════ */
+header,
+.navbar-wrapper {
+  width: 100%;
+  max-width: 100vw;
+  left: 0;
+  right: 0;
+  /* Prevent any child from causing horizontal overflow */
+  overflow-x: clip;
+}
+
+/* ═══════════════════════════════════════════════════════
+   RESPONSIVE SECTION PADDING
+═══════════════════════════════════════════════════════ */
+.section-padding {
+  padding-top: clamp(64px, 8vw, 112px);
+  padding-bottom: clamp(64px, 8vw, 112px);
+}
+.section-padding-sm {
+  padding-top: clamp(32px, 5vw, 64px);
+  padding-bottom: clamp(32px, 5vw, 64px);
+}
+.section-lg {
+  padding-top: clamp(64px, 8vw, 112px);
+  padding-bottom: clamp(64px, 8vw, 112px);
+}
+.section-md {
+  padding-top: clamp(48px, 6vw, 80px);
+  padding-bottom: clamp(48px, 6vw, 80px);
+}
+
+/* ═══════════════════════════════════════════════════════
+   RESPONSIVE CONTAINER PADDING
+═══════════════════════════════════════════════════════ */
+.container-px {
+  padding-left: clamp(16px, 4vw, 32px);
+  padding-right: clamp(16px, 4vw, 32px);
+}
+
 
 /* ═══════════════════════════════════════════════════════
    MATERIAL ICONS
@@ -547,4 +651,285 @@ h1, h2, h3, h4, h5, h6 {
   background: linear-gradient(135deg, var(--primary) 0%, var(--secondary) 100%);
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
+}
+
+/* ═══════════════════════════════════════════════════════
+   PREMIUM SECTION SPACING SYSTEM
+═══════════════════════════════════════════════════════ */
+/* XL sections — hero, about, testimonials */
+.section-xl {
+  padding-top:    clamp(80px, 10vw, 160px);
+  padding-bottom: clamp(80px, 10vw, 160px);
+}
+/* LG sections — services, doctors, gallery */
+.section-lg {
+  padding-top:    clamp(64px, 8vw, 128px);
+  padding-bottom: clamp(64px, 8vw, 128px);
+}
+/* MD sections — stats strip, marquee */
+.section-md {
+  padding-top:    clamp(40px, 5vw, 72px);
+  padding-bottom: clamp(40px, 5vw, 72px);
+}
+/* Consistent horizontal container padding */
+.section-container {
+  max-width: 1320px;
+  margin-left: auto;
+  margin-right: auto;
+  padding-left:  clamp(20px, 5vw, 80px);
+  padding-right: clamp(20px, 5vw, 80px);
+}
+
+/* ═══════════════════════════════════════════════════════
+   EDITORIAL TYPOGRAPHY
+═══════════════════════════════════════════════════════ */
+/* Display — biggest hero heading */
+.text-display {
+  font-family: 'Plus Jakarta Sans', Manrope, sans-serif;
+  font-weight: 800;
+  line-height: 1.0;
+  letter-spacing: -0.04em;
+  font-size: clamp(40px, 6.5vw, 96px);
+}
+/* Section headline */
+.text-headline {
+  font-family: 'Plus Jakarta Sans', Manrope, sans-serif;
+  font-weight: 800;
+  line-height: 1.1;
+  letter-spacing: -0.03em;
+  font-size: clamp(28px, 4vw, 56px);
+}
+/* Sub-headline */
+.text-subheadline {
+  font-family: 'Plus Jakarta Sans', Manrope, sans-serif;
+  font-weight: 700;
+  line-height: 1.2;
+  letter-spacing: -0.02em;
+  font-size: clamp(20px, 2.5vw, 36px);
+}
+/* Eyebrow label — small all-caps label above headings */
+.eyebrow {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  font-family: 'Inter', sans-serif;
+  font-weight: 600;
+  font-size: clamp(10px, 1vw, 12px);
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: #2BB8A6;
+}
+.eyebrow::before {
+  content: '';
+  display: inline-block;
+  width: 20px;
+  height: 2px;
+  background: currentColor;
+  border-radius: 2px;
+  flex-shrink: 0;
+}
+
+/* ═══════════════════════════════════════════════════════
+   BENTO GRID — Gallery section
+═══════════════════════════════════════════════════════ */
+.bento-grid {
+  display: grid;
+  gap: clamp(8px, 1.2vw, 16px);
+  grid-template-columns: repeat(12, 1fr);
+  grid-template-rows: auto;
+}
+.bento-cell { overflow: hidden; border-radius: clamp(12px, 1.5vw, 20px); }
+.bento-cell img { width: 100%; height: 100%; object-fit: cover; object-position: center; transition: transform 0.6s cubic-bezier(0.16,1,0.3,1); }
+.bento-cell:hover img { transform: scale(1.05); }
+
+/* Desktop bento layout */
+@media (min-width: 768px) {
+  .bento-a { grid-column: 1 / 6;  grid-row: 1 / 3; min-height: clamp(280px, 30vw, 420px); }
+  .bento-b { grid-column: 6 / 9;  grid-row: 1 / 2; min-height: clamp(140px, 14vw, 200px); }
+  .bento-c { grid-column: 9 / 13; grid-row: 1 / 2; min-height: clamp(140px, 14vw, 200px); }
+  .bento-d { grid-column: 6 / 10; grid-row: 2 / 3; min-height: clamp(140px, 14vw, 200px); }
+  .bento-e { grid-column: 10 / 13;grid-row: 2 / 3; min-height: clamp(140px, 14vw, 200px); }
+  .bento-f { grid-column: 1 / 5;  grid-row: 3 / 4; min-height: clamp(160px, 16vw, 240px); }
+  .bento-g { grid-column: 5 / 9;  grid-row: 3 / 4; min-height: clamp(160px, 16vw, 240px); }
+  .bento-h { grid-column: 9 / 13; grid-row: 3 / 4; min-height: clamp(160px, 16vw, 240px); }
+}
+
+/* Mobile gallery: horizontal swipe carousel */
+.gallery-mobile-scroll {
+  display: flex;
+  gap: 12px;
+  overflow-x: auto;
+  scroll-snap-type: x mandatory;
+  -webkit-overflow-scrolling: touch;
+  scrollbar-width: none;
+  padding-bottom: 4px;
+}
+.gallery-mobile-scroll::-webkit-scrollbar { display: none; }
+.gallery-mobile-card {
+  flex-shrink: 0;
+  width: clamp(200px, 55vw, 280px);
+  height: clamp(200px, 55vw, 280px);
+  border-radius: 16px;
+  overflow: hidden;
+  scroll-snap-align: start;
+}
+.gallery-mobile-card img { width: 100%; height: 100%; object-fit: cover; object-position: center; }
+
+/* ═══════════════════════════════════════════════════════
+   SERVICES BENTO GRID
+═══════════════════════════════════════════════════════ */
+.services-bento {
+  display: grid;
+  gap: clamp(12px, 1.5vw, 20px);
+  grid-template-columns: 1fr;
+}
+@media (min-width: 640px) {
+  .services-bento {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+@media (min-width: 1024px) {
+  .services-bento {
+    grid-template-columns: repeat(3, 1fr);
+    grid-template-rows: auto auto;
+  }
+  .svc-featured {
+    grid-column: 1 / 2;
+    grid-row: 1 / 3;
+  }
+}
+
+/* ═══════════════════════════════════════════════════════
+   EDITORIAL CARD — bordered hover lift
+═══════════════════════════════════════════════════════ */
+.editorial-card {
+  position: relative;
+  background: #FFFFFF;
+  border: 1px solid rgba(15,23,42,0.08);
+  border-radius: clamp(16px, 2vw, 24px);
+  overflow: hidden;
+  transition: transform 0.4s cubic-bezier(0.16,1,0.3,1),
+              box-shadow 0.4s cubic-bezier(0.16,1,0.3,1),
+              border-color 0.3s ease;
+}
+.editorial-card:hover {
+  transform: translateY(-6px);
+  box-shadow: 0 24px 64px rgba(11,59,110,0.13);
+  border-color: rgba(11,59,110,0.18);
+}
+
+/* ═══════════════════════════════════════════════════════
+   SHIMMER ANIMATION — skeleton / accent use
+═══════════════════════════════════════════════════════ */
+@keyframes shimmer {
+  0%   { background-position: -400px 0; }
+  100% { background-position:  400px 0; }
+}
+.animate-shimmer {
+  background: linear-gradient(90deg, transparent 0%, rgba(255,255,255,0.4) 50%, transparent 100%);
+  background-size: 400px 100%;
+  animation: shimmer 2s infinite linear;
+}
+
+/* ═══════════════════════════════════════════════════════
+   STAT NUMBER — extra bold stat display
+═══════════════════════════════════════════════════════ */
+.stat-number {
+  font-family: 'Plus Jakarta Sans', Manrope, sans-serif;
+  font-weight: 800;
+  letter-spacing: -0.04em;
+  line-height: 1;
+  font-size: clamp(36px, 5vw, 72px);
+  color: #0B3B6E;
+}
+
+/* ═══════════════════════════════════════════════════════
+   SPLIT SECTION — editorial full-bleed image + copy
+═══════════════════════════════════════════════════════ */
+.split-image {
+  width: 100%;
+  height: 100%;
+  min-height: clamp(280px, 40vw, 560px);
+  object-fit: cover;
+  object-position: center;
+}
+
+/* ═══════════════════════════════════════════════════════
+   JOURNEY STEP LINE
+═══════════════════════════════════════════════════════ */
+.step-connector {
+  position: absolute;
+  top: 40px;
+  left: calc(50% + 48px);
+  right: calc(-50% + 48px);
+  height: 1px;
+  background: linear-gradient(90deg, #0B3B6E 0%, #2BB8A6 100%);
+  opacity: 0.2;
+}
+
+/* ═══════════════════════════════════════════════════════
+   PULL QUOTE — testimonial large text
+═══════════════════════════════════════════════════════ */
+.pull-quote {
+  font-family: 'Plus Jakarta Sans', Manrope, sans-serif;
+  font-weight: 600;
+  line-height: 1.4;
+  letter-spacing: -0.01em;
+  font-size: clamp(18px, 2.5vw, 28px);
+  color: rgba(255,255,255,0.9);
+}
+
+/* ═══════════════════════════════════════════════════════
+   NUMBER LABEL — FAQ / step numbers
+═══════════════════════════════════════════════════════ */
+.num-label {
+  font-family: 'Plus Jakarta Sans', Manrope, sans-serif;
+  font-weight: 800;
+  font-size: clamp(32px, 4vw, 56px);
+  letter-spacing: -0.04em;
+  line-height: 1;
+  color: rgba(11,59,110,0.08);
+}
+
+/* ═══════════════════════════════════════════════════════
+   CTA STRIP — footer pre-section
+═══════════════════════════════════════════════════════ */
+.cta-strip {
+  background: linear-gradient(135deg, #0B3B6E 0%, #0F5DAA 50%, #2BB8A6 100%);
+  position: relative;
+  overflow: hidden;
+}
+.cta-strip::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: url("data:image/svg+xml,%3Csvg width='60' height='60' viewBox='0 0 60 60' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='none' fill-rule='evenodd'%3E%3Cg fill='%23ffffff' fill-opacity='0.04'%3E%3Cpath d='M36 34v-4h-2v4h-4v2h4v4h2v-4h4v-2h-4zm0-30V0h-2v4h-4v2h4v4h2V6h4V4h-4zM6 34v-4H4v4H0v2h4v4h2v-4h4v-2H6zM6 4V0H4v4H0v2h4v4h2V6h4V4H6z'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E");
+}
+
+/* ═══════════════════════════════════════════════════════
+   GALLERY MOBILE SWIPE
+═══════════════════════════════════════════════════════ */
+.gallery-mobile-scroll {
+  display: flex;
+  overflow-x: auto;
+  scroll-snap-type: x mandatory;
+  gap: 16px;
+  padding-bottom: 16px;
+  -webkit-overflow-scrolling: touch;
+  scrollbar-width: none;
+}
+.gallery-mobile-scroll::-webkit-scrollbar {
+  display: none;
+}
+.gallery-mobile-card {
+  scroll-snap-align: center;
+  flex: 0 0 85%;
+  height: clamp(240px, 60vw, 360px);
+  border-radius: 16px;
+  overflow: hidden;
+}
+.gallery-mobile-card img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
 }

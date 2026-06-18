@@ -1,6 +1,5 @@
 import type { Metadata } from "next";
 import Header from "@/components/layout/Header";
-import Footer from "@/components/layout/Footer";
 import "./globals.css";
 
 export const metadata: Metadata = {
@@ -20,6 +19,8 @@ export default function RootLayout({
       className="h-full antialiased"
     >
       <head>
+        {/* Viewport – essential for mobile responsiveness */}
+        <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
         {/* Font preconnects */}
         <link rel="preconnect" href="https://fonts.googleapis.com" />
         <link rel="preconnect" href="https://fonts.gstatic.com" crossOrigin="anonymous" />
@@ -34,12 +35,11 @@ export default function RootLayout({
           rel="stylesheet"
         />
       </head>
-      <body className="min-h-full flex flex-col" style={{ background: "#FAFBFD", color: "#0F172A" }}>
+      <body className="min-h-full flex flex-col w-full overflow-x-hidden" style={{ background: "#FAFBFD", color: "#0F172A" }}>
         <Header />
         <div className="flex-grow flex flex-col w-full">
           {children}
         </div>
-        <Footer />
       </body>
     </html>
   );
